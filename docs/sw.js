@@ -66,8 +66,10 @@ const PRECACHE_CARD_URLS = [
   'card-resources/Coin.png',
   'card-resources/Debt.png',
   'card-resources/Potion.png',
-  'card-resources/VP.png',
-  'card-resources/VP-Token.png',
+  'card-resources/HP.png',
+  'card-resources/HP-Token.png',
+  'card-resources/heart.png',
+  'card-resources/food.png',
   'card-resources/Sun.png',
   'card-resources/Traveller.png'
 ];

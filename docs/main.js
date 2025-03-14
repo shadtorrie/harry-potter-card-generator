@@ -29,8 +29,10 @@ function initCardImageGenerator() {
     var icons = { //the names should match the image filenames (plus a .png extension).
         "@": ["Debt", "white", "Treasure"],
         "\\^": ["Potion", "white", "Treasure"],
-        "%": ["VP", "white", "Victory"],
-        "#": ["VP-Token", "white", "Victory"], //German VP Token (not a nice decision of ASS Altenburger, but maybe nice to have to keep the cards consistent)
+        "%": ["HP", "white", "Victory"],
+        "#": ["HP-Token", "white", "Victory"], //German VP Token (not a nice decision of ASS Altenburger, but maybe nice to have to keep the cards consistent)
+        '~':["heart","white","Victory"],
+        '\\&':["food","white","Treasure"],
         "\\$": ["Coin", "black", "Treasure"],
         "\\*": ["Sun", "black", "Treasure"],
         "§": ["Custom Icon", "white", "Treasure"]
