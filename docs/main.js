@@ -954,7 +954,7 @@ function initCardImageGenerator() {
             }
         }
         arguments += "&size=" + templateSize;
-        history.replaceState({}, "Dominion Card Image Generator", arguments);
+        history.replaceState({}, "Harry Potter Card Image Generator", arguments);
     }
 
 

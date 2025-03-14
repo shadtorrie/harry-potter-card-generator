@@ -117,8 +117,8 @@ self.addEventListener('fetch', event => {
                 return caches.open(RUNTIME).then(cache => {
                     return fetch(event.request).then(response => {
                         // Put a copy of the response in the runtime cache.
-                        if (event.request.url.startsWith('https://shardofhonor.github.io/dominion-card-generator/?') ||
-                            event.request.url.startsWith('https://shardofhonor.github.io/dominion-card-generator/index.html?')) {
+                        if (event.request.url.startsWith('https://shadtorrie.github.io/harry-potter-card-generator/?') ||
+                            event.request.url.startsWith('https://shadtorrie.github.io/harry-potter-card-generator/index.html?')) {
                             // do not cache these, because they are redundant
                             return response;
                         } else {
