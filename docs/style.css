@@ -231,6 +231,7 @@ body.size6 #sizes {
 #openFontSettings,
 #favorites,
 #addFavorite,
+#deleteFavorite,
 #share {
     position: absolute;
     left: 20px;
@@ -258,6 +259,13 @@ body.size6 #sizes {
 #addFavorite {
     /* position quick add below the favorites button */
     top: calc(795px + 6em);
+    left: 20px;
+    z-index: 20;
+}
+
+#deleteFavorite {
+    /* position delete favorites below the add favorite button */
+    top: calc(795px + 9em);
     left: 20px;
     z-index: 20;
 }
@@ -328,6 +336,13 @@ body.size4 #addFavorite,
 body.size5 #addFavorite,
 body.size6 #addFavorite {
     top: calc(795px - 80px + 6em);
+}
+
+body.size1 #deleteFavorite,
+body.size4 #deleteFavorite,
+body.size5 #deleteFavorite,
+body.size6 #deleteFavorite {
+    top: calc(795px - 80px + 9em);
 }
 
 body.size1 #share,
@@ -796,6 +811,7 @@ html.view-card #reset,
 html.view-card #share,
 html.view-card #favorites,
 html.view-card #addFavorite,
+html.view-card #deleteFavorite,
 html.view-card #manage-favorites,
 html.view-card #openFontSettings,
 html.view-card #manage-fonts,

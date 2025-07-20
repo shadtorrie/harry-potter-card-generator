@@ -1470,6 +1470,17 @@ function Favorites(name) {
         data = data.remove(params);
         this.save();
     };
+    this.deleteByName = function (name) {
+        this.refresh();
+        name = (name || '').trim();
+        if (name === '') {
+            return;
+        }
+        data = data.filter(function (item) {
+            return (getQueryParams(item).title || '').trim() !== name;
+        });
+        this.save();
+    };
     this.add = function (params) {
         this.refresh();
         let newTitle = (getQueryParams(params).title || "").trim();
