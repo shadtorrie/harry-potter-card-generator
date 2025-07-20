@@ -253,7 +253,7 @@ body.size5 #sizes {
 
 #addFavorite {
     /* place the quick favorite button next to the other action buttons */
-    left: calc(40px + 17em);
+    left: calc(40px + 22em);
     z-index: 20;
 }
 
