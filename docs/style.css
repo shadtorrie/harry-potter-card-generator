@@ -846,3 +846,25 @@ body.favorites-page #manage-favorites .menu {
 body.favorites-page #favorites-list {
     margin-top: 1em;
 }
+
+#favorites-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+#favorites-table th,
+#favorites-table td {
+    padding: 0.5em;
+    border: 1px solid var(--color-background3);
+    text-align: left;
+}
+
+#favorites-table th {
+    cursor: pointer;
+}
+
+#favorites-table .filters input {
+    width: 100%;
+    box-sizing: border-box;
+}

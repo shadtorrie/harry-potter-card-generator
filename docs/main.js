@@ -1401,11 +1401,53 @@ function downloadPicture() {
 }
 
 function Favorites(name) {
+    var self = this;
     var name = name;
     var fav = document.getElementById("manage-favorites");
-    var favList = document.getElementById("favorites-list");
+    var favTable = document.getElementById("favorites-table");
+    var favBody = favTable ? favTable.getElementsByTagName('tbody')[0] : null;
     var data = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [];
+    var filters = { title: '', type: '', price: '', description: '', preview: '', type2: '', version: '' };
+    var sortCol = null;
     var ascending = true;
+
+    if (favTable) {
+        favTable.querySelectorAll('thead .filters input').forEach(inp => {
+            inp.addEventListener('input', () => {
+                filters[inp.dataset.filter] = inp.value.toLowerCase();
+                self.refresh();
+            });
+        });
+        favTable.querySelectorAll('thead tr:first-child th[data-col]').forEach(th => {
+            th.addEventListener('click', () => {
+                sort(th.dataset.col);
+            });
+        });
+    }
+
+    function parse(item) {
+        let p = getQueryParams(item);
+        return {
+            raw: item,
+            title: (p.title || '').trim(),
+            type: (p.type || '').trim(),
+            price: (p.price || '').replace('^','P').trim(),
+            description: (p.description || '').trim(),
+            preview: (p.preview || '').trim(),
+            type2: (p.type2 || '').trim(),
+            version: (p.creator || '').trim()
+        };
+    }
+
+    function sort(column) {
+        if (sortCol === column) {
+            ascending = !ascending;
+        } else {
+            sortCol = column;
+            ascending = true;
+        }
+        self.refresh();
+    }
 
     this.export = function () {
         let jsonData = localStorage.getItem('favorites');
@@ -1534,79 +1576,71 @@ function Favorites(name) {
         this.refresh();
     }
     this.search = function (term) {
-        let children = favList.childNodes;
-        for (child in children) {
-            if (!isNaN(child)) {
-                if (children[child].hasChildNodes()) {
-                    var cardname = children[child].childNodes[0].innerHTML;
-                    if (cardname.toUpperCase().includes(term.toUpperCase())) {
-                        children[child].classList.remove('hidden');
-                    } else {
-                        children[child].classList.add('hidden');
-                    }
-                }
-            }
+        filters.title = term.toLowerCase();
+        if (favTable) {
+            const input = favTable.querySelector('input[data-filter="title"]');
+            if (input) { input.value = term; }
         }
+        this.refresh();
     }
-    this.refresh = function (params) {
+    this.refresh = function () {
         data = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [];
+        if (!favBody) { return; }
 
-        while (favList.firstChild) {
-            favList.removeChild(favList.firstChild);
+        while (favBody.firstChild) {
+            favBody.removeChild(favBody.firstChild);
         }
-        data.forEach(function (item) {
-            let title = getQueryParams(item).title == "" ? "<unnamed card>" : getQueryParams(item).title.trim();
-            let types = '[' + getQueryParams(item).type.trim() + '] ';
-            let price = getQueryParams(item).price.replace('^', 'P').trim();
-            switch (getQueryParams(item).size) {
-                case '0': // normal card
-                    title = getQueryParams(item).type.trim() == "" ? title : types + title;
-                    title = price == "" ? title : price + ' ' + title;
-                    title = "Card: " + title;
-                    break;
-                case '1': // landscape card
-                    title = getQueryParams(item).type.trim() == "" ? title : types + title;
-                    title = price == "" ? title : price + ' ' + title;
-                    title = "Landscape: " + title;
-                    break;
-                case '2': // double card
-                    title = '[' + getQueryParams(item).type.trim() + ' | ' + getQueryParams(item).type2.trim() + '] ' + title;
-                    let title2 = getQueryParams(item).title2.trim();
-                    title = title2 == "" ? title : title + ' | ' + title2;
-                    title = price == "" ? title : price + ' ' + title;
-                    title = "Double: " + title;
-                    break;
-                case '3': // base card
-                    title = getQueryParams(item).type.trim() == "" ? title : types + title;
-                    title = price == "" ? title : price + ' ' + title;
-                    title = "Base Card: " + title;
-                    break;
-                case '4': // pile marker (like bane)
-                    title = "Pile Marker: " + title;
-                    break;
-                case '5': // mat
-                    title = "Mat: " + title;
-                    break;
-            }
-            title = getQueryParams(item).creator == "" ? title : title + ' ' + getQueryParams(item).creator.split(" ")[0];
 
-            let li = document.createElement("li");
-            let a = document.createElement("a");
-            a.setAttribute('href', 'index.html' + item);
-            a.appendChild(document.createTextNode(title));
-            if (item === document.location.search) {
-                li.setAttribute('class', "active");
-            }
-            li.appendChild(a);
-            let bttnDel = document.createElement("button");
-            bttnDel.setAttribute('class', "delete");
-            bttnDel.setAttribute('onclick', name + ".delete('" + item + "')");
-            let imgDel = document.createElement("img");
-            imgDel.setAttribute('src', "assets/icon-delete.png");
+        let rows = data.map(parse);
+
+        if (sortCol) {
+            rows.sort((a, b) => {
+                let va = a[sortCol].toLowerCase();
+                let vb = b[sortCol].toLowerCase();
+                if (va < vb) return ascending ? -1 : 1;
+                if (va > vb) return ascending ? 1 : -1;
+                return 0;
+            });
+        }
+
+        rows = rows.filter(r => {
+            return (!filters.title || r.title.toLowerCase().includes(filters.title)) &&
+                   (!filters.type || r.type.toLowerCase().includes(filters.type)) &&
+                   (!filters.price || r.price.toLowerCase().includes(filters.price)) &&
+                   (!filters.description || r.description.toLowerCase().includes(filters.description)) &&
+                   (!filters.preview || r.preview.toLowerCase().includes(filters.preview)) &&
+                   (!filters.type2 || r.type2.toLowerCase().includes(filters.type2)) &&
+                   (!filters.version || r.version.toLowerCase().includes(filters.version));
+        });
+
+        rows.forEach(item => {
+            let tr = document.createElement('tr');
+
+            let tdTitle = document.createElement('td');
+            let a = document.createElement('a');
+            a.setAttribute('href', 'index.html' + item.raw);
+            a.textContent = item.title || '<unnamed card>';
+            tdTitle.appendChild(a);
+            tr.appendChild(tdTitle);
+
+            ['type','price','description','preview','type2','version'].forEach(k => {
+                let td = document.createElement('td');
+                td.textContent = item[k];
+                tr.appendChild(td);
+            });
+
+            let tdDel = document.createElement('td');
+            let bttnDel = document.createElement('button');
+            bttnDel.setAttribute('class','delete');
+            bttnDel.onclick = () => { this.delete(item.raw); };
+            let imgDel = document.createElement('img');
+            imgDel.setAttribute('src','assets/icon-delete.png');
             bttnDel.appendChild(imgDel);
-            bttnDel.appendChild(document.createTextNode("Delete"));
-            li.appendChild(bttnDel);
-            favList.appendChild(li);
+            bttnDel.appendChild(document.createTextNode('Delete'));
+            tdDel.appendChild(bttnDel);
+            tr.appendChild(tdDel);
+
+            favBody.appendChild(tr);
         });
     };
 }
