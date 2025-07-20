@@ -762,3 +762,23 @@ button.delete-all:focus {
     height: 1200px;
     border: none;
 }
+html.view-card body:before,
+html.view-card body:after,
+html.view-card #main-nav,
+html.view-card #sizes,
+html.view-card #legend,
+html.view-card #download,
+html.view-card #reset,
+html.view-card #share,
+html.view-card #favorites,
+html.view-card #addFavorite,
+html.view-card #manage-favorites,
+html.view-card #openFontSettings,
+html.view-card #manage-fonts,
+html.view-card #table th:not(:first-child),
+html.view-card #table td {
+    display: none !important;
+}
+html.view-card body {
+    margin: 0;
+}

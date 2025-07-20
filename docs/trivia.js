@@ -14,7 +14,8 @@ function loadCard() {
         return;
     }
     const sel = triviaCards[Math.floor(Math.random() * triviaCards.length)];
-    frame.src = 'index.html' + sel;
+    const url = 'index.html' + sel + (sel.includes('?') ? '&' : '?') + 'view=card';
+    frame.src = url;
     frame.style.display = 'block';
     msg.textContent = '';
 }
