@@ -1451,10 +1451,17 @@ function Favorites(name) {
         });
     }
 
+    function buildQuery(params) {
+        return '?' + Object.keys(params)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+            .join('&');
+    }
+
     function parse(item) {
         let p = getQueryParams(item);
         return {
             raw: item,
+            params: p,
             title: (p.title || '').trim(),
             type: (p.type || '').trim(),
             price: (p.price || '').replace('^','P').trim(),
@@ -1639,21 +1646,45 @@ function Favorites(name) {
                    (!filters.version || r.version.toLowerCase().includes(filters.version));
         });
 
-        rows.forEach(item => {
+        rows.forEach((item, idx) => {
             let tr = document.createElement('tr');
 
-            let tdTitle = document.createElement('td');
-            let a = document.createElement('a');
-            a.setAttribute('href', 'index.html' + item.raw);
-            a.textContent = item.title || '<unnamed card>';
-            tdTitle.appendChild(a);
-            tr.appendChild(tdTitle);
+            function saveChanges() {
+                item.params.title = item.title;
+                item.params.type = item.type;
+                item.params.price = item.price.replace('P', '^');
+                item.params.description = item.description;
+                item.params.preview = item.preview;
+                item.params.type2 = item.type2;
+                item.params.creator = item.version;
+                item.raw = buildQuery(item.params);
+                data[idx] = item.raw;
+                localStorage.setItem('favorites', JSON.stringify(data));
+            }
 
-            ['type','price','description','preview','type2','version'].forEach(k => {
+            function makeEditableCell(key) {
                 let td = document.createElement('td');
-                td.textContent = item[k];
+                td.contentEditable = 'true';
+                td.textContent = item[key];
+                td.addEventListener('blur', () => {
+                    item[key] = td.textContent.trim();
+                    saveChanges();
+                });
                 tr.appendChild(td);
+            }
+
+            makeEditableCell('title');
+            ['type','price','description','preview','type2','version'].forEach(k => {
+                makeEditableCell(k);
             });
+
+            let tdEdit = document.createElement('td');
+            let bttnEdit = document.createElement('button');
+            bttnEdit.setAttribute('class','edit');
+            bttnEdit.onclick = () => { window.location.href = 'index.html' + item.raw; };
+            bttnEdit.appendChild(document.createTextNode('Edit'));
+            tdEdit.appendChild(bttnEdit);
+            tr.appendChild(tdEdit);
 
             let tdDel = document.createElement('td');
             let bttnDel = document.createElement('button');
