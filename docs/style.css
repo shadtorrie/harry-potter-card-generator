@@ -225,6 +225,7 @@ body.size5 #sizes {
 #reset,
 #openFontSettings,
 #favorites,
+#addFavorite,
 #share {
     position: absolute;
     left: 20px;
@@ -233,6 +234,7 @@ body.size5 #sizes {
 
 #openFontSettings,
 #favorites,
+#addFavorite,
 #share {
     top: calc(795px + 3em);
 }
@@ -247,6 +249,10 @@ body.size5 #sizes {
 
 #openFontSettings {
     left: calc(40px + 6.2em);
+}
+
+#addFavorite {
+    left: calc(40px + 14em);
 }
 
 button {
@@ -302,7 +308,10 @@ body.size4 #openFontSettings,
 body.size5 #openFontSettings,
 body.size1 #favorites,
 body.size4 #favorites,
-body.size5 #favorites {
+body.size5 #favorites,
+body.size1 #addFavorite,
+body.size4 #addFavorite,
+body.size5 #addFavorite {
     top: calc(795px - 80px + 3em);
 }
 
