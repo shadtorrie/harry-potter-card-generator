@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Favorites</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</head>
+<body>
+    <nav id="main-nav">
+        <a href="index.html" class="tab">Card Generator</a>
+        <a href="trivia.html" class="tab">Trivia</a>
+        <a href="favorites.html" class="tab active">Favorites</a>
+    </nav>
+    <div id="manage-favorites" class="popup">
+        <div class="menu">
+            <button type="button" class="delete-all hidden" onclick="myFavorites.deleteAll()"><img src="assets/icon-delete.png" />Delete All</button>
+            <button type="button" class="sort" onclick="myFavorites.sort()" title="Sort"><img alt="Sort" src="assets/icon-sort.png" /></button>
+            <button type="button" onclick="myFavorites.export()" title="Export"><img alt="Export" src="assets/icon-download.png" /></button>
+            <button type="button" onclick="myFavorites.import()" title="Import JSON or CSV"><img alt="Import" src="assets/icon-upload.png" /></button>
+            <input id="favorites-search" type="search" class="search" placeholder="Search..." oninput="myFavorites.search(this.value)" />
+        </div>
+        <ul id="favorites-list" class="popup-content"></ul>
+    </div>
+    <script src="main.js"></script>
+    <script>
+        let myFavorites;
+        window.addEventListener('DOMContentLoaded', () => {
+            myFavorites = new Favorites('myFavorites');
+            myFavorites.refresh();
+        });
+    </script>
+</body>
+</html>
