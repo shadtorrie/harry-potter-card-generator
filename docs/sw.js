@@ -8,7 +8,9 @@ const RUNTIME = 'runtime';
 const OFFLINE_URL = './';
 const PRECACHE_CORE_URLS = [
   'index.html',
+  'trivia.html',
   'main.js',
+  'trivia.js',
   'style.css',
   'fonts/font-title.css',
   'fonts/font-specials.css',
