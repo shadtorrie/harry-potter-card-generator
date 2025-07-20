@@ -1448,6 +1448,17 @@ function Favorites(name) {
     };
     this.add = function (params) {
         this.refresh();
+        let newTitle = (getQueryParams(params).title || "").trim();
+        let existingIndex = data.findIndex(function (item) {
+            return (getQueryParams(item).title || "").trim() === newTitle;
+        });
+        if (existingIndex !== -1) {
+            let displayTitle = newTitle === "" ? "<unnamed card>" : newTitle;
+            if (!window.confirm("Would you like to overwrite the current " + displayTitle + " card?")) {
+                return;
+            }
+            data.splice(existingIndex, 1);
+        }
         data = data.remove(params);
         data.push(params);
         this.save();
