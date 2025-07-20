@@ -142,7 +142,8 @@ a:focus {
 
 body.size1 #load-indicator,
 body.size4 #load-indicator,
-body.size5 #load-indicator {
+body.size5 #load-indicator,
+body.size6 #load-indicator {
     top: 160px;
     left: 235px;
 }
@@ -174,6 +175,7 @@ body:not(.size5) .myCanvas {
 body.size1 #portraitCanvas,
 body.size4 #portraitCanvas,
 body.size5 #portraitCanvas,
+body.size6 #portraitCanvas,
 body.size0 #landscapeCanvas,
 body.size2 #landscapeCanvas,
 body.size3 #landscapeCanvas,
@@ -182,7 +184,8 @@ body.size0 #matCanvas,
 body.size1 #matCanvas,
 body.size2 #matCanvas,
 body.size3 #matCanvas,
-body.size4 #matCanvas {
+body.size4 #matCanvas,
+body.size6 #matCanvas {
     display: none;
 }
 
@@ -198,7 +201,8 @@ body.size4 #matCanvas {
 
 body.size1 #sizes,
 body.size4 #sizes,
-body.size5 #sizes {
+body.size5 #sizes,
+body.size6 #sizes {
     top: calc(490px - 80px);
 }
 
@@ -299,30 +303,36 @@ button:active {
 body.size1 #download,
 body.size4 #download,
 body.size5 #download,
+body.size6 #download,
 body.size1 #reset,
 body.size4 #reset,
-body.size5 #reset {
+body.size5 #reset,
+body.size6 #reset {
     top: calc(795px - 80px);
 }
 
 body.size1 #openFontSettings,
 body.size4 #openFontSettings,
 body.size5 #openFontSettings,
+body.size6 #openFontSettings,
 body.size1 #favorites,
 body.size4 #favorites,
-body.size5 #favorites {
+body.size5 #favorites,
+body.size6 #favorites {
     top: calc(795px - 80px + 3em);
 }
 
 body.size1 #addFavorite,
 body.size4 #addFavorite,
-body.size5 #addFavorite {
+body.size5 #addFavorite,
+body.size6 #addFavorite {
     top: calc(795px - 80px + 6em);
 }
 
 body.size1 #share,
 body.size4 #share,
-body.size5 #share {
+body.size5 #share,
+body.size6 #share {
     top: calc(795px - 80px + 6em);
 }
 
@@ -381,7 +391,8 @@ col {
 
 body.size1 col,
 body.size4 col,
-body.size5 col {
+body.size5 col,
+body.size6 col {
     width: 483px;
 }
 
@@ -416,6 +427,7 @@ body.size2 .hideForDoubleCard,
 body.size3 .hideForBaseCards,
 body.size4 .hideForPileMarker,
 body.size5 .hideForMats,
+body.size6 .hideForTrivia,
 body.size1.trait .hideForTraits {
     visibility: collapse;
     display: none !important;
@@ -471,6 +483,15 @@ label {
 
 textarea {
     resize: vertical;
+}
+
+body:not(.size6) #title {
+    height: 1.4em;
+    resize: none;
+}
+
+body.size6 #title {
+    height: 7em;
 }
 
 input[type=number] {
@@ -559,7 +580,8 @@ label[for="type"] {
 
 body.size1 [data-status]:after,
 body.size4 [data-status]:after,
-body.size5 [data-status]:after {
+body.size5 [data-status]:after,
+body.size6 [data-status]:after {
     top: calc(492px - 80px);
 }
 
@@ -574,7 +596,8 @@ body.size5 [data-status]:after {
 
 body.size1 #legend,
 body.size4 #legend,
-body.size5 #legend {
+body.size5 #legend,
+body.size6 #legend {
     top: calc(540px - 80px);
 }
 
