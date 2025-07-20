@@ -99,6 +99,10 @@
                     <label for="size5" style="margin-left:0.5em;">
                         <img src="card-resources/MatIcon.png" width="62" height="46" alt="" title="Player Mat" />
                     </label>
+                    <input type="radio" name="size" id="size6" value="6" />
+                    <label for="size6">
+                        <img src="card-resources/BaseCardIcon.png" width="46" height="30" alt="" title="Trivia" />
+                    </label>
                 </menu>
                 <ul id="legend">
                     <li><span class="def">-</span>: Horizontal Bar</li>
@@ -151,10 +155,10 @@
             <td class="doubledForDoubleCards">
                 <div>
                     <label for="title">Title</label>
-                    <input id="title" placeholder="Village" />
+                    <textarea id="title" rows="2" placeholder="Village"></textarea>
                 </div>
             </td>
-            <td>
+            <td class="hideForTrivia">
                 <div>
                     <label for="title2">Title</label>
                     <input id="title2" />
@@ -162,14 +166,14 @@
             </td>
         </tr>
         <tr>
-            <td class="doubledForDoubleCards hideForPileMarker">
+            <td class="doubledForDoubleCards hideForPileMarker hideForTrivia">
                 <div>
                     <label for="description">Description</label>
                     <textarea rows="5" id="description" placeholder="+1 Card
 +2 Actions"></textarea>
                 </div>
             </td>
-            <td class="hideForPileMarker hideForMats">
+            <td class="hideForPileMarker hideForMats hideForTrivia">
                 <div>
                     <label for="description2">Description</label>
                     <textarea rows="5" id="description2"></textarea>
@@ -177,13 +181,13 @@
             </td>
         </tr>
         <tr>
-            <td class="hideForPileMarker">
+            <td class="hideForPileMarker hideForTrivia">
                 <div>
                     <label for="boldkeys">Additional Bold Keywords</label>
                     <input id="boldkeys" placeholder="Additional boldable keywords; separated by semicolons" />
                 </div>
             </td>
-            <td class="hideForPileMarker">
+            <td class="hideForPileMarker hideForTrivia">
                 <div>
                     <label for="custom-icon">Custom Icon</label>
                     <input id="custom-icon" type="url" placeholder="http://example.com/icon.png" />
@@ -194,10 +198,10 @@
             </td>
         </tr>
         <tr>
-            <td class="hideForPileMarker hideForMats">
+            <td class="hideForPileMarker hideForMats hideForTrivia">
                 <div>
                     <label for="type">Type</label>
-                    <span class="type-checkboxes hideForBaseCards hideForPileMarker hideForMats hideForDoubleCard">
+            <span class="type-checkboxes hideForBaseCards hideForPileMarker hideForMats hideForDoubleCard hideForTrivia">
                         <span class="checkbox hideForLandscape">
                             <input id="traveller" type="checkbox" placeholder="Action">
                             <label for="traveller">Traveller</label>
@@ -210,7 +214,7 @@
                     <input id="type" placeholder="Action">
                 </div>
             </td>
-            <td class="hideForPileMarker hideForMats">
+            <td class="hideForPileMarker hideForMats hideForTrivia">
                 <div>
                     <label for="type2"></label>
                     <input id="type2" />
@@ -218,7 +222,7 @@
             </td>
         </tr>
         <tr>
-            <td rowspan="3" class="doubledForPileMarkers">
+            <td rowspan="3" class="doubledForPileMarkers hideForTrivia">
                 <div id="image-positioning">
                     <label for="picture">URL of Illustration</label>
                     <input id="picture" type="url" placeholder="http://example.com/image.jpg" />
@@ -248,7 +252,7 @@
                     </table>
                 </div>
             </td>
-            <td class="hideForPileMarker">
+            <td class="hideForPileMarker hideForTrivia">
                 <div>
                     <label for="expansion">URL of Expansion Icon</label>
                     <input id="expansion" type="url" placeholder="http://example.com/expansion.png" />
@@ -258,7 +262,7 @@
             </td>
         </tr>
         <tr>
-            <td class="hideForPileMarker">
+            <td class="hideForPileMarker hideForTrivia">
                 <div>
                     <label for="credit">Art Credit</label>
                     <input id="credit" type="text" placeholder="Illustration: Jane Doe" />
@@ -266,7 +270,7 @@
             </td>
         </tr>
         <tr>
-            <td class="hideForPileMarker">
+            <td class="hideForPileMarker hideForTrivia">
                 <div>
                     <label for="creator">Version &amp; Creator Credit</label>
                     <input id="creator" type="text" placeholder="v0.1 John Doe" />
@@ -274,12 +278,12 @@
             </td>
         </tr>
         <tr>
-            <td id="priceCell" class="hideForPileMarker hideForMats">
+            <td id="priceCell" class="hideForPileMarker hideForMats hideForTrivia">
                 <div>
                     <label for="price">Price</label>
                     <input id="price" placeholder="$3" />
             </td>
-            <td id="previewCell" class="hideForPileMarker hideForMats">
+            <td id="previewCell" class="hideForPileMarker hideForMats hideForTrivia">
                 <div>
                     <label for="preview"></label>
                     <input id="preview" />
@@ -287,7 +291,7 @@
             </td>
         </tr>
         <tr>
-            <td class="hideForMats doubledForBaseCards doubledForPileMarkers doubledForTraits">
+            <td class="hideForMats doubledForBaseCards doubledForPileMarkers doubledForTraits hideForTrivia">
                 <div>
                     <label for="normalcolor1">Color</label>
                     <select name="normalcolor" id="normalcolor1">
@@ -302,7 +306,7 @@
                     </div>
                 </div>
             </td>
-            <td class="hideForBaseCards hideForPileMarker hideForMats hideForTraits">
+            <td class="hideForBaseCards hideForPileMarker hideForMats hideForTraits hideForTrivia">
                 <div>
                     <label for="normalcolor2">Color</label>
                     <span id="color-switch"><button id="color-switch-button" alt="Switch Colors"><img src="assets/icon-switch.png" />Switch</button></span>

@@ -507,7 +507,7 @@ function initCardImageGenerator() {
         var context;
         if (templateSize === 0 || templateSize === 2 || templateSize === 3) {
             context = canvases[0].getContext("2d");
-        } else if (templateSize === 1 || templateSize === 4) {
+        } else if (templateSize === 1 || templateSize === 4 || templateSize === 6) {
             context = canvases[1].getContext("2d");
         } else {
             context = canvases[2].getContext("2d");
@@ -888,6 +888,21 @@ function initCardImageGenerator() {
             writeCreatorCredit(913, 660, "white", "", 16);
 
             drawExpansionIcon(888, 40, 40, 40);
+
+        } else if (templateSize == 6) { // trivia card
+            removeCorners(2151, 1403, 100);
+            context.drawImage(getRecoloredImage(6, 0), 0, 0);
+            if (normalColorCurrentIndices[1] > 0)
+                context.drawImage(getRecoloredImage(7, 1), 0, 0);
+            context.drawImage(getRecoloredImage(8, 0, 6), 0, 0);
+            context.drawImage(getRecoloredImage(15, 0, 9), 0, 0);
+
+            context.textAlign = "center";
+            context.textBaseline = "middle";
+
+            if (isEachColorDark[1])
+                context.fillStyle = "white";
+            writeDescription("title", 1075, 702, 1800, 600, 70);
 
         }
 
