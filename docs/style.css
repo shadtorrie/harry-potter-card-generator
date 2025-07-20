@@ -823,3 +823,26 @@ html.view-card body {
     margin: 0;
     background: white;
 }
+
+/* Layout adjustments for standalone favorites page */
+body.favorites-page #manage-favorites {
+    position: static;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+    padding: 0;
+    background: var(--color-background2);
+}
+
+body.favorites-page #manage-favorites .menu {
+    position: static;
+    width: 100%;
+    padding: 1em;
+    background: var(--color-background2);
+}
+
+body.favorites-page #favorites-list {
+    margin-top: 1em;
+}
