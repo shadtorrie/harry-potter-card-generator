@@ -757,7 +757,8 @@ button.delete-all:focus {
     margin-bottom: 1em;
 }
 
-#answers button {
-    display: block;
-    margin: 0.25em 0;
+#card-frame {
+    width: 100%;
+    height: 1200px;
+    border: none;
 }
