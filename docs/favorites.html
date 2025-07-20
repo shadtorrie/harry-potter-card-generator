@@ -24,7 +24,31 @@
             <button type="button" onclick="myFavorites.import()" title="Import JSON or CSV"><img alt="Import" src="assets/icon-upload.png" /></button>
             <input id="favorites-search" type="search" class="search" placeholder="Search..." oninput="myFavorites.search(this.value)" />
         </div>
-        <ul id="favorites-list" class="popup-content"></ul>
+        <table id="favorites-table" class="popup-content">
+            <thead>
+                <tr>
+                    <th data-col="title">Title</th>
+                    <th data-col="type">Type(s)</th>
+                    <th data-col="price">Price</th>
+                    <th data-col="description">Description</th>
+                    <th data-col="preview">Preview</th>
+                    <th data-col="type2">Secondary Type</th>
+                    <th data-col="version">Version #</th>
+                    <th></th>
+                </tr>
+                <tr class="filters">
+                    <th><input data-filter="title" type="search" /></th>
+                    <th><input data-filter="type" type="search" /></th>
+                    <th><input data-filter="price" type="search" /></th>
+                    <th><input data-filter="description" type="search" /></th>
+                    <th><input data-filter="preview" type="search" /></th>
+                    <th><input data-filter="type2" type="search" /></th>
+                    <th><input data-filter="version" type="search" /></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
     <script src="main.js"></script>
     <script>
