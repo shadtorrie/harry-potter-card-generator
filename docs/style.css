@@ -2,7 +2,7 @@
 :root {
 
     --color-text: black;
-    --color-background1: white;
+    --color-background1: #f0f0f0;
     --color-background2: #CCC;
     --color-background3: rgba(255, 255, 255, 0.5);
     --color-background4: #DDD;
