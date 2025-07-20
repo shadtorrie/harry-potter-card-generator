@@ -716,3 +716,34 @@ button.delete-all:focus {
 #favorites-list li:hover {
     background: var(--color-background3);
 }
+
+#main-nav {
+    display: flex;
+    gap: 1em;
+    padding: 0.5em;
+    background: var(--color-background2);
+}
+
+#main-nav .tab {
+    text-decoration: none;
+    color: var(--color-link);
+    padding: 0.2em 0.5em;
+}
+
+#main-nav .tab.active {
+    font-weight: bold;
+    border-bottom: 2px solid var(--color-link-hover);
+}
+
+#trivia-container {
+    padding: 1em;
+}
+
+#trivia-container button {
+    margin-bottom: 1em;
+}
+
+#answers button {
+    display: block;
+    margin: 0.25em 0;
+}
