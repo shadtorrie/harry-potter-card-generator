@@ -1592,7 +1592,7 @@ function Favorites(name) {
 
             let li = document.createElement("li");
             let a = document.createElement("a");
-            a.setAttribute('href', location.pathname + item);
+            a.setAttribute('href', 'index.html' + item);
             a.appendChild(document.createTextNode(title));
             if (item === document.location.search) {
                 li.setAttribute('class', "active");
