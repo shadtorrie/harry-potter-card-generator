@@ -374,9 +374,13 @@ function initCardImageGenerator() {
             writeLineWithIconsReplacedWithSpaces(line, x - getWidthOfLineWithIconsReplacedWithSpaces(line) / 2, y, size / 90, family);
         }
 
-        function writeDescription(elementID, xCenter, yCenter, maxWidth, maxHeight, boldSize) {
+        function writeDescription(elementOrText, xCenter, yCenter, maxWidth, maxHeight, boldSize) {
             rebuildBoldLinePatternWords();
-            var description = document.getElementById(elementID).value.replace(/ *\n */g, " \n ").replace(boldLinePatternWords, "$1\xa0$2$3").replace(boldLinePatternWordsSpecial, "$1$2\xa0$3$4") + " \n"; //separate newlines into their own words for easier processing
+            var el = document.getElementById(elementOrText);
+            var description = (el ? el.value : elementOrText)
+                .replace(/ *\n */g, " \n ")
+                .replace(boldLinePatternWords, "$1\xa0$2$3")
+                .replace(boldLinePatternWordsSpecial, "$1$2\xa0$3$4") + " \n"; //separate newlines into their own words for easier processing
             var words = description.split(" ");
             var lines;
             var widthsPerLine;
@@ -527,6 +531,7 @@ function initCardImageGenerator() {
         var previewLine = document.getElementById("preview").value;
         var priceLine = document.getElementById("price").value;
         var numberPriceIcons = (priceLine.match(new RegExp("[" + Object.keys(icons).join("") + "]", "g")) || []).length
+        var isTrivia = typeLine.toLowerCase().includes('trivia');
 
         var isEachColorDark = [false, false];
         for (var i = 0; i < 2; ++i)
@@ -625,7 +630,8 @@ function initCardImageGenerator() {
             }
             if (isEachColorDark[1])
                 context.fillStyle = "white";
-            writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 75);
+            if (!isTrivia)
+                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 75);
             if (typeLine.split(" - ").length >= 4) {
                 let types2 = typeLine.split(" - ");
                 let types1 = types2.splice(0, Math.ceil(types2.length / 2));
@@ -651,10 +657,13 @@ function initCardImageGenerator() {
                 writeSingleLine(previewLine, 1203, 210, 0, 0, "mySpecials");
             }
             context.fillStyle = (isEachColorDark[0]) ? "white" : "black";
+            var desc0 = document.getElementById("description").value;
+            if (isTrivia)
+                desc0 = document.getElementById("title").value + (desc0.trim() ? "\n-\n" : "") + desc0;
             if (!heirloomLine)
-                writeDescription("description", 701, 1500, 960, 660, 64);
+                writeDescription(desc0, 701, 1500, 960, 660, 64);
             else
-                writeDescription("description", 701, 1450, 960, 560, 64);
+                writeDescription(desc0, 701, 1450, 960, 560, 64);
             writeIllustrationCredit(150, 2038, "white", "");
             writeCreatorCredit(1253, 2038, "white", "");
 
@@ -702,19 +711,22 @@ function initCardImageGenerator() {
                     writeSingleLine(typeLine, 1075, 165, 780, 70);
                 }
 
-                context.save();
-                context.rotate(Math.PI * 3 / 2);
-                writeSingleLine(document.getElementById("title").value, -700, 2030, 750, 70);
-                context.restore();
-                context.save();
-                context.rotate(Math.PI / 2);
-                writeSingleLine(document.getElementById("title").value, 700, -120, 750, 70);
-                context.restore();
+                if (!isTrivia) {
+                    context.save();
+                    context.rotate(Math.PI * 3 / 2);
+                    writeSingleLine(document.getElementById("title").value, -700, 2030, 750, 70);
+                    context.restore();
+                    context.save();
+                    context.rotate(Math.PI / 2);
+                    writeSingleLine(document.getElementById("title").value, 700, -120, 750, 70);
+                    context.restore();
+                }
 
 
             } else {
 
-                writeSingleLine(document.getElementById("title").value, 1075, 165, 780, 70);
+                if (!isTrivia)
+                    writeSingleLine(document.getElementById("title").value, 1075, 165, 780, 70);
 
                 if (typeLine) {
                     context.save();
@@ -729,7 +741,10 @@ function initCardImageGenerator() {
 
             if (priceLine)
                 writeLineWithIconsReplacedWithSpaces(priceLine + " ", 130, 205, 85 / 90, "mySpecials"); //adding a space confuses writeLineWithIconsReplacedWithSpaces into thinking this isn't a line that needs resizing
-            writeDescription("description", 1075, 1107, 1600, 283, 70);
+            var desc1 = document.getElementById("description").value;
+            if (isTrivia)
+                desc1 = document.getElementById("title").value + (desc1.trim() ? "\n-\n" : "") + desc1;
+            writeDescription(desc1, 1075, 1107, 1600, 283, 70);
             writeIllustrationCredit(181, 1272, "black", "bold ");
             writeCreatorCredit(1969, 1272, "black", "bold ");
 
@@ -765,25 +780,32 @@ function initCardImageGenerator() {
 
                 context.save();
                 var title = document.getElementById(l).value;
-                var size = 75 + 2;
-                do {
-                    context.font = (size -= 2) + "pt myTitle";
-                } while (context.measureText(title).width > 750);
-                context.textAlign = "left";
-                context.fillStyle = "rgb(" + Math.round(recolorFactors[0] * 224) + "," + Math.round(recolorFactors[1] * 224) + "," + Math.round(recolorFactors[2] * 224) + ")";
-                context.lineWidth = 15;
-                if (isEachColorDark[colorID])
-                    context.strokeStyle = "white";
-                context.strokeText(title, 150, 1287);
-                context.fillText(title, 150, 1287);
-                context.restore();
+                if (!isTrivia) {
+                    var size = 75 + 2;
+                    do {
+                        context.font = (size -= 2) + "pt myTitle";
+                    } while (context.measureText(title).width > 750);
+                    context.textAlign = "left";
+                    context.fillStyle = "rgb(" + Math.round(recolorFactors[0] * 224) + "," + Math.round(recolorFactors[1] * 224) + "," + Math.round(recolorFactors[2] * 224) + ")";
+                    context.lineWidth = 15;
+                    if (isEachColorDark[colorID])
+                        context.strokeStyle = "white";
+                    context.strokeText(title, 150, 1287);
+                    context.fillText(title, 150, 1287);
+                    context.restore();
+                } else {
+                    context.restore();
+                }
 
                 if (isEachColorDark[colorID])
                     context.fillStyle = "white";
                 writeSingleLine(t, p ? 750 : 701, 1922, p ? 890 : 1190, 64);
                 if (p)
                     writeLineWithIconsReplacedWithSpaces(p + " ", 153, 1940, 85 / 90, "mySpecials");
-                writeDescription(d, 701, 1600, 960, 460, 64);
+                var descHalf = document.getElementById(d).value;
+                if (isTrivia)
+                    descHalf = document.getElementById(l).value + (descHalf.trim() ? "\n-\n" : "") + descHalf;
+                writeDescription(descHalf, 701, 1600, 960, 460, 64);
                 context.restore();
             }
             context.save();
@@ -817,7 +839,8 @@ function initCardImageGenerator() {
             }
             if (isEachColorDark[1])
                 context.fillStyle = "white";
-            writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 75);
+            if (!isTrivia)
+                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 75);
             if (typeLine.split(" - ").length >= 4) {
                 let types2 = typeLine.split(" - ");
                 let types1 = types2.splice(0, Math.ceil(types2.length / 2));
@@ -837,10 +860,13 @@ function initCardImageGenerator() {
                 writeSingleLine(previewLine, 1203, 210, 0, 0, "mySpecials");
             }
             context.fillStyle = (isEachColorDark[0]) ? "white" : "black";
+            var desc3 = document.getElementById("description").value;
+            if (isTrivia)
+                desc3 = document.getElementById("title").value + (desc3.trim() ? "\n-\n" : "") + desc3;
             if (!heirloomLine)
-                writeDescription("description", 701, 1060, 960, 1500, 64);
+                writeDescription(desc3, 701, 1060, 960, 1500, 64);
             else
-                writeDescription("description", 701, 1000, 960, 1400, 64);
+                writeDescription(desc3, 701, 1000, 960, 1400, 64);
             writeIllustrationCredit(165, 2045, "white", "");
             writeCreatorCredit(1225, 2045, "white", "");
 
@@ -859,13 +885,15 @@ function initCardImageGenerator() {
             if (isEachColorDark[1])
                 context.fillStyle = "white";
             context.rotate(Math.PI / 2);
-            writeSingleLine(document.getElementById("title").value, 700, -1920, 500, 75);
+            if (!isTrivia)
+                writeSingleLine(document.getElementById("title").value, 700, -1920, 500, 75);
             context.restore();
             context.save();
             if (isEachColorDark[1])
                 context.fillStyle = "white";
             context.rotate(Math.PI * 3 / 2);
-            writeSingleLine(document.getElementById("title").value, -700, 230, 500, 75);
+            if (!isTrivia)
+                writeSingleLine(document.getElementById("title").value, -700, 230, 500, 75);
             context.restore();
         } else if (templateSize == 5) { //player mat
             drawPicture(464, 342, 928, 684);
@@ -880,9 +908,13 @@ function initCardImageGenerator() {
 
             if (isEachColorDark[1])
                 context.fillStyle = "white";
-            writeSingleLine(document.getElementById("title").value, 464, 96, 490, 55);
+            if (!isTrivia)
+                writeSingleLine(document.getElementById("title").value, 464, 96, 490, 55);
 
-            writeDescription("description", 464, 572, 740, 80, 44);
+            var desc5 = document.getElementById("description").value;
+            if (isTrivia)
+                desc5 = document.getElementById("title").value + (desc5.trim() ? "\n-\n" : "") + desc5;
+            writeDescription(desc5, 464, 572, 740, 80, 44);
 
             writeIllustrationCredit(15, 660, "white", "", 16);
             writeCreatorCredit(913, 660, "white", "", 16);
@@ -902,7 +934,13 @@ function initCardImageGenerator() {
 
             if (isEachColorDark[1])
                 context.fillStyle = "white";
-            writeDescription("title", 1075, 702, 1800, 600, 70);
+            var desc6 = document.getElementById("description");
+            var text6 = desc6 ? desc6.value.trim() : "";
+            if (text6.length > 0)
+                text6 = document.getElementById("title").value + "\n-\n" + text6;
+            else
+                text6 = document.getElementById("title").value;
+            writeDescription(text6, 1075, 702, 1800, 600, 70);
 
         }
 
