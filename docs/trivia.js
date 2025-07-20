@@ -1,38 +1,25 @@
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+function loadCard() {
+    const frame = document.getElementById('card-frame');
+    const msg = document.getElementById('message');
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const triviaCards = favorites.filter(q => {
+        const query = q.startsWith('?') ? q.substring(1) : q;
+        const params = new URLSearchParams(query);
+        const type = (params.get('type') || '').toLowerCase();
+        return type.includes('trivia');
+    });
+    if (triviaCards.length === 0) {
+        msg.textContent = 'No trivia cards in favorites.';
+        frame.style.display = 'none';
+        return;
     }
-    return array;
+    const sel = triviaCards[Math.floor(Math.random() * triviaCards.length)];
+    frame.src = 'index.html' + sel;
+    frame.style.display = 'block';
+    msg.textContent = '';
 }
 
-function loadQuestion() {
-    const qEl = document.getElementById('question');
-    const aEl = document.getElementById('answers');
-    qEl.textContent = 'Loading...';
-    aEl.innerHTML = '';
-    fetch('https://opentdb.com/api.php?amount=1&type=multiple')
-        .then(r => r.json())
-        .then(data => {
-            const q = data.results[0];
-            qEl.innerHTML = q.question;
-            const answers = shuffle([q.correct_answer, ...q.incorrect_answers]);
-            answers.forEach(ans => {
-                const btn = document.createElement('button');
-                btn.textContent = ans;
-                btn.onclick = () => {
-                    alert(ans === q.correct_answer ? 'Correct!' : 'Wrong!');
-                };
-                aEl.appendChild(btn);
-            });
-        })
-        .catch(err => {
-            qEl.textContent = 'Failed to load question.';
-            console.error(err);
-        });
-}
+document.getElementById('next-card').addEventListener('click', loadCard);
 
-document.getElementById('next-question').addEventListener('click', loadQuestion);
-
-// load first question on page load
-loadQuestion();
+// load a card on page load
+window.addEventListener('DOMContentLoaded', loadCard);
