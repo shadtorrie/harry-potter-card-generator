@@ -234,7 +234,6 @@ body.size5 #sizes {
 
 #openFontSettings,
 #favorites,
-#addFavorite,
 #share {
     top: calc(795px + 3em);
 }
@@ -252,7 +251,10 @@ body.size5 #sizes {
 }
 
 #addFavorite {
-    left: calc(40px + 14em);
+    /* position the quick favorite button beneath the Favorites button */
+    left: 20px;
+    top: calc(795px + 6em);
+    z-index: 20;
 }
 
 button {
@@ -308,16 +310,16 @@ body.size4 #openFontSettings,
 body.size5 #openFontSettings,
 body.size1 #favorites,
 body.size4 #favorites,
-body.size5 #favorites,
-body.size1 #addFavorite,
-body.size4 #addFavorite,
-body.size5 #addFavorite {
+body.size5 #favorites {
     top: calc(795px - 80px + 3em);
 }
 
 body.size1 #share,
 body.size4 #share,
-body.size5 #share {
+body.size5 #share,
+body.size1 #addFavorite,
+body.size4 #addFavorite,
+body.size5 #addFavorite {
     top: calc(795px - 80px + 6em);
 }
 
