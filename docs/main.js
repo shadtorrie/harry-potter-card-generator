@@ -1441,7 +1441,22 @@ function Favorites(name) {
                     }
                 } catch (err) {
                     // fall back to CSV where each line is a favorite link
-                    newData = content.split(/\r?\n/).filter(l => l.trim() !== "");
+                    let lines = content.split(/\r?\n/).filter(l => l.trim() !== "");
+                    let valid = [];
+                    let invalid = [];
+                    lines.forEach((l, idx) => {
+                        const params = getQueryParams(l);
+                        if (!params.title || !params.type || !params.price || !params.size) {
+                            invalid.push(`Line ${idx + 1}: ${l}`);
+                        } else {
+                            valid.push(l);
+                        }
+                    });
+                    if (invalid.length > 0) {
+                        console.error("Invalid favorites in CSV:");
+                        invalid.forEach(msg => console.error(msg));
+                    }
+                    newData = valid;
                 }
                 data = data.concat(newData);
                 myFavs.save();
