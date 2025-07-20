@@ -374,9 +374,13 @@ function initCardImageGenerator() {
             writeLineWithIconsReplacedWithSpaces(line, x - getWidthOfLineWithIconsReplacedWithSpaces(line) / 2, y, size / 90, family);
         }
 
-        function writeDescription(elementID, xCenter, yCenter, maxWidth, maxHeight, boldSize) {
+        function writeDescription(elementOrText, xCenter, yCenter, maxWidth, maxHeight, boldSize) {
             rebuildBoldLinePatternWords();
-            var description = document.getElementById(elementID).value.replace(/ *\n */g, " \n ").replace(boldLinePatternWords, "$1\xa0$2$3").replace(boldLinePatternWordsSpecial, "$1$2\xa0$3$4") + " \n"; //separate newlines into their own words for easier processing
+            var el = document.getElementById(elementOrText);
+            var description = (el ? el.value : elementOrText)
+                .replace(/ *\n */g, " \n ")
+                .replace(boldLinePatternWords, "$1\xa0$2$3")
+                .replace(boldLinePatternWordsSpecial, "$1$2\xa0$3$4") + " \n"; //separate newlines into their own words for easier processing
             var words = description.split(" ");
             var lines;
             var widthsPerLine;
@@ -527,6 +531,7 @@ function initCardImageGenerator() {
         var previewLine = document.getElementById("preview").value;
         var priceLine = document.getElementById("price").value;
         var numberPriceIcons = (priceLine.match(new RegExp("[" + Object.keys(icons).join("") + "]", "g")) || []).length
+        var isTrivia = typeLine.toLowerCase().includes('trivia');
 
         var isEachColorDark = [false, false];
         for (var i = 0; i < 2; ++i)
@@ -651,10 +656,13 @@ function initCardImageGenerator() {
                 writeSingleLine(previewLine, 1203, 210, 0, 0, "mySpecials");
             }
             context.fillStyle = (isEachColorDark[0]) ? "white" : "black";
+            var desc0 = document.getElementById("description").value;
+            if (isTrivia)
+                desc0 = desc0 + (desc0.trim() ? "\n-\n" : "") + document.getElementById("title").value;
             if (!heirloomLine)
-                writeDescription("description", 701, 1500, 960, 660, 64);
+                writeDescription(desc0, 701, 1500, 960, 660, 64);
             else
-                writeDescription("description", 701, 1450, 960, 560, 64);
+                writeDescription(desc0, 701, 1450, 960, 560, 64);
             writeIllustrationCredit(150, 2038, "white", "");
             writeCreatorCredit(1253, 2038, "white", "");
 
@@ -729,7 +737,10 @@ function initCardImageGenerator() {
 
             if (priceLine)
                 writeLineWithIconsReplacedWithSpaces(priceLine + " ", 130, 205, 85 / 90, "mySpecials"); //adding a space confuses writeLineWithIconsReplacedWithSpaces into thinking this isn't a line that needs resizing
-            writeDescription("description", 1075, 1107, 1600, 283, 70);
+            var desc1 = document.getElementById("description").value;
+            if (isTrivia)
+                desc1 = desc1 + (desc1.trim() ? "\n-\n" : "") + document.getElementById("title").value;
+            writeDescription(desc1, 1075, 1107, 1600, 283, 70);
             writeIllustrationCredit(181, 1272, "black", "bold ");
             writeCreatorCredit(1969, 1272, "black", "bold ");
 
@@ -783,7 +794,10 @@ function initCardImageGenerator() {
                 writeSingleLine(t, p ? 750 : 701, 1922, p ? 890 : 1190, 64);
                 if (p)
                     writeLineWithIconsReplacedWithSpaces(p + " ", 153, 1940, 85 / 90, "mySpecials");
-                writeDescription(d, 701, 1600, 960, 460, 64);
+                var descHalf = document.getElementById(d).value;
+                if (isTrivia)
+                    descHalf = descHalf + (descHalf.trim() ? "\n-\n" : "") + document.getElementById(l).value;
+                writeDescription(descHalf, 701, 1600, 960, 460, 64);
                 context.restore();
             }
             context.save();
@@ -837,10 +851,13 @@ function initCardImageGenerator() {
                 writeSingleLine(previewLine, 1203, 210, 0, 0, "mySpecials");
             }
             context.fillStyle = (isEachColorDark[0]) ? "white" : "black";
+            var desc3 = document.getElementById("description").value;
+            if (isTrivia)
+                desc3 = desc3 + (desc3.trim() ? "\n-\n" : "") + document.getElementById("title").value;
             if (!heirloomLine)
-                writeDescription("description", 701, 1060, 960, 1500, 64);
+                writeDescription(desc3, 701, 1060, 960, 1500, 64);
             else
-                writeDescription("description", 701, 1000, 960, 1400, 64);
+                writeDescription(desc3, 701, 1000, 960, 1400, 64);
             writeIllustrationCredit(165, 2045, "white", "");
             writeCreatorCredit(1225, 2045, "white", "");
 
@@ -882,7 +899,10 @@ function initCardImageGenerator() {
                 context.fillStyle = "white";
             writeSingleLine(document.getElementById("title").value, 464, 96, 490, 55);
 
-            writeDescription("description", 464, 572, 740, 80, 44);
+            var desc5 = document.getElementById("description").value;
+            if (isTrivia)
+                desc5 = desc5 + (desc5.trim() ? "\n-\n" : "") + document.getElementById("title").value;
+            writeDescription(desc5, 464, 572, 740, 80, 44);
 
             writeIllustrationCredit(15, 660, "white", "", 16);
             writeCreatorCredit(913, 660, "white", "", 16);
@@ -902,7 +922,13 @@ function initCardImageGenerator() {
 
             if (isEachColorDark[1])
                 context.fillStyle = "white";
-            writeDescription("title", 1075, 702, 1800, 600, 70);
+            var desc6 = document.getElementById("description");
+            var text6 = desc6 ? desc6.value.trim() : "";
+            if (text6.length > 0)
+                text6 = text6 + "\n-\n" + document.getElementById("title").value;
+            else
+                text6 = document.getElementById("title").value;
+            writeDescription(text6, 1075, 702, 1800, 600, 70);
 
         }
 
