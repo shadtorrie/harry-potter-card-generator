@@ -1433,7 +1433,16 @@ function Favorites(name) {
             reader.readAsText(file, 'UTF-8');
             reader.onload = readerEvent => {
                 let content = readerEvent.target.result;
-                let newData = JSON.parse(content);
+                let newData;
+                try {
+                    newData = JSON.parse(content);
+                    if (!Array.isArray(newData)) {
+                        newData = [];
+                    }
+                } catch (err) {
+                    // fall back to CSV where each line is a favorite link
+                    newData = content.split(/\r?\n/).filter(l => l.trim() !== "");
+                }
                 data = data.concat(newData);
                 myFavs.save();
 
