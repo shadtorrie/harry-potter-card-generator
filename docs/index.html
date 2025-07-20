@@ -63,6 +63,7 @@
     <nav id="main-nav">
         <a href="index.html" class="tab active">Card Generator</a>
         <a href="trivia.html" class="tab">Trivia</a>
+        <a href="favorites.html" class="tab">Favorites</a>
     </nav>
     <table id="table">
         <colgroup>
@@ -115,12 +116,10 @@
                         document.write('<a id="share" rel="nofollow" href="#share" onclick="if(navigator.vibrate){navigator.vibrate(50);};navigator.share({ title: document.title, text: document.title, url: window.location.href, }).catch((error) => console.log(\'Error sharing\', error));" title="Share Link"><button type="button"><img src="assets/icon-share.png" /></button></a>');
                     }
                 </script>
-                <a id="favorites" title="click to open saved cards"><button type="button" onclick="myFavorites.open()"><img src="assets/icon-favorites.png" />Favorites</button></a>
                 <a id="addFavorite" title="click to add current card to favorites"><button type="button" onclick="myFavorites.add( document.location.search )"><img src="assets/icon-favorites.png" />Add to Favorites</button></a>
                 <a id="deleteFavorite" title="click to remove current card from favorites"><button type="button" onclick="myFavorites.deleteByName( document.getElementById('title').value )"><img src="assets/icon-delete.png" />Delete from Favorites</button></a>
                 <div id="manage-favorites" class="popup hidden">
                     <div class="menu">
-                        <button type="button" onclick="myFavorites.add( document.location.search )"><img src="assets/icon-favorites.png" />Add Current Card</button>
                         <button type="button" class="delete-all hidden" onclick="myFavorites.deleteAll()"><img src="assets/icon-delete.png" />Delete All</button>
                         <button type="button" class="sort" onclick="myFavorites.sort()" title="Sort"><img alt="Sort" src="assets/icon-sort.png" /></button>
                         <button type="button" class="" onclick="myFavorites.export()" title="Export"><img alt="Export" src="assets/icon-download.png" /></button>
