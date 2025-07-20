@@ -1514,7 +1514,7 @@ function Favorites(name) {
                     let invalid = [];
                     lines.forEach((l, idx) => {
                         const params = getQueryParams(l);
-                        if (!params.title || !params.type || !params.price || !params.size) {
+                        if (!params.size) {
                             invalid.push(`Line ${idx + 1}: ${l}`);
                         } else {
                             valid.push(l);
