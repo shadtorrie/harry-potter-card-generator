@@ -117,6 +117,7 @@
                 </script>
                 <a id="favorites" title="click to open saved cards"><button type="button" onclick="myFavorites.open()"><img src="assets/icon-favorites.png" />Favorites</button></a>
                 <a id="addFavorite" title="click to add current card to favorites"><button type="button" onclick="myFavorites.add( document.location.search )"><img src="assets/icon-favorites.png" />Add to Favorites</button></a>
+                <a id="deleteFavorite" title="click to remove current card from favorites"><button type="button" onclick="myFavorites.deleteByName( document.getElementById('title').value )"><img src="assets/icon-delete.png" />Delete from Favorites</button></a>
                 <div id="manage-favorites" class="popup hidden">
                     <div class="menu">
                         <button type="button" onclick="myFavorites.add( document.location.search )"><img src="assets/icon-favorites.png" />Add Current Card</button>
