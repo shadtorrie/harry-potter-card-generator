@@ -85,6 +85,7 @@ body:after {
     background-repeat: repeat-y;
     z-index: 10;
     opacity: 0.3;
+    pointer-events: none;
 }
 
 body:before {
