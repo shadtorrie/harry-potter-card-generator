@@ -703,6 +703,15 @@ button.delete {
     margin-bottom: 0.15em;
 }
 
+button.edit {
+    float: right;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    margin-top: 0.15em;
+    margin-bottom: 0.15em;
+    margin-right: 0.5em;
+}
+
 button.delete:hover,
 button.delete:focus,
 button.delete-all:hover,
