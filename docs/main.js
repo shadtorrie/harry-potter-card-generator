@@ -28,13 +28,13 @@ function initCardImageGenerator() {
     //these three can all be expanded as you see fit
     var icons = { //the names should match the image filenames (plus a .png extension).
         "@": ["Debt", "white", "Treasure"],
-        "\\^": ["Potion", "white", "Treasure"],
+        "^": ["Potion", "white", "Treasure"],
         "%": ["HP", "white", "Victory"],
         "#": ["HP-Token", "white", "Victory"], //German VP Token (not a nice decision of ASS Altenburger, but maybe nice to have to keep the cards consistent)
         '~':["heart","white","Victory"],
-        '\\&':["food","white","Treasure"],
-        "\\$": ["Coin", "black", "Treasure"],
-        "\\*": ["Sun", "black", "Treasure"],
+        '&':["food","white","Treasure"],
+        "$": ["Coin", "black", "Treasure"],
+        "*": ["Sun", "black", "Treasure"],
         "§": ["Custom Icon", "white", "Treasure"]
     };
     var normalColorFactorLists = [
@@ -128,7 +128,10 @@ function initCardImageGenerator() {
     var boldLinePatternWordsSpecial;
     rebuildBoldLinePatternWords();
 
-    var iconList = "[" + Object.keys(icons).join("") + "]";
+    function escapeForRegex(s) {
+        return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    var iconList = "[" + Object.keys(icons).map(escapeForRegex).join("") + "]";
     //var boldLinePatternIcons = RegExp("[-+]\\d+\\s" + iconList + "\\d+", "ig");
     var iconWithNumbersPattern = "[-+]?(" + iconList + ")([\\d\\?]*[-+\\*]?)";
     var iconWithNumbersPatternSingle = RegExp("^([-+]?\\d+)?" + iconWithNumbersPattern + "(\\S*)$");
@@ -203,7 +206,7 @@ function initCardImageGenerator() {
         }
 
         function getIconListing(icon) {
-            return icons[icon] || icons["\\" + icon];
+            return icons[icon];
         }
         var shadowDistance = 10;
         var italicSubstrings = ["[i]", "Heirloom: ", "Erbstück: ", "(This is not in the Supply.)", "Keep this until Clean-up."];
@@ -253,7 +256,7 @@ function initCardImageGenerator() {
                         var image = false;
                         var iconKeys = Object.keys(icons);
                         for (var j = 0; j < iconKeys.length; ++j) {
-                            if (iconKeys[j].replace("\\", "") == match[2]) {
+                            if (iconKeys[j] == match[2]) {
                                 image = images[numberFirstIcon + j];
                                 break;
                             }
@@ -538,7 +541,7 @@ function initCardImageGenerator() {
         var heirloomLine = document.getElementById("type2").value;
         var previewLine = document.getElementById("preview").value;
         var priceLine = document.getElementById("price").value;
-        var numberPriceIcons = (priceLine.match(new RegExp("[" + Object.keys(icons).join("") + "]", "g")) || []).length
+        var numberPriceIcons = (priceLine.match(new RegExp("[" + Object.keys(icons).map(escapeForRegex).join("") + "]", "g")) || []).length
         var isTrivia = typeLine.toLowerCase().includes('trivia');
 
         var isEachColorDark = [false, false];
