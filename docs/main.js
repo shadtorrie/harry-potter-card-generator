@@ -5,6 +5,67 @@ let useCORS = true; // flag to activate loading of external images via CORS help
 //const CORS_ANYWHERE_BASE_URL = 'https://thingproxy.freeboard.io/fetch/';
 const CORS_ANYWHERE_BASE_URL = 'https://proxy.cors.sh/'; // from https://blog.grida.co/cors-anywhere-for-everyone-free-reliable-cors-proxy-service-73507192714e
 
+const ICON_MAP = {
+    "@": "Debt",
+    "^": "Potion",
+    "%": "HP",
+    "#": "HP-Token",
+    "~": "heart",
+    "&": "food",
+    "$": "Coin",
+    "*": "Sun",
+    "§": "Custom Icon"
+};
+
+function iconify(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/([@^%#~&$*§])/g, c => `<img class="icon-inline" src="card-resources/${ICON_MAP[c]}.png" data-icon="${c}" alt="${c}">`)
+        .replace(/\n/g, '<br>');
+}
+
+function setupIconOverlay(elem) {
+    if (!elem) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'icon-wrapper';
+    elem.parentNode.insertBefore(wrapper, elem);
+    wrapper.appendChild(elem);
+    const overlay = document.createElement('div');
+    overlay.className = 'icon-overlay';
+    wrapper.appendChild(overlay);
+    elem.classList.add('icon-text');
+    function update() { overlay.innerHTML = iconify(elem.value); }
+    update();
+    elem.addEventListener('input', update);
+}
+
+function setupIconOverlayEditable(elem) {
+    if (!elem) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'icon-wrapper';
+    elem.parentNode.insertBefore(wrapper, elem);
+    wrapper.appendChild(elem);
+    const overlay = document.createElement('div');
+    overlay.className = 'icon-overlay';
+    wrapper.appendChild(overlay);
+    elem.classList.add('icon-text');
+    function update() { overlay.innerHTML = iconify(elem.textContent); }
+    update();
+    elem.addEventListener('input', update);
+}
+
+function setupIconInputs() {
+    [
+        'title','title2','description','description2',
+        'type','type2','price','preview','boldkeys'
+    ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) setupIconOverlay(el);
+    });
+}
+
 Array.prototype.remove = function () {
     var what, a = arguments,
         L = a.length,
@@ -1714,6 +1775,7 @@ function Favorites(name) {
                 let td = document.createElement('td');
                 td.contentEditable = 'true';
                 td.textContent = item[key];
+                setupIconOverlayEditable(td);
                 td.addEventListener('blur', () => {
                     item[key] = td.textContent.trim();
                     saveChanges();
