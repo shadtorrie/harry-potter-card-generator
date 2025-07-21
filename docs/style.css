@@ -924,3 +924,10 @@ body.favorites-page #favorites-list {
     background-position: center;
     pointer-events: none;
 }
+
+/* Mobile step-by-step layout */
+body.mobile-steps #table tr[data-step] { display: none; }
+body.mobile-steps #table tr[data-step].active { display: table-row; }
+body.mobile-steps #additional-options { display: none; }
+#mobile-navigation, #mobile-final { text-align: center; margin: 1em 0; }
+#mobile-final { display: none; }

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Harry Potter Card Image Generator</title>
+    <title>Mobile Card Generator</title>
     <meta charset="utf-8" />
 
     <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
@@ -54,18 +54,19 @@
 
     </script>
     <script src="main.js"></script>
+    <script src="mobile.js" defer></script>
     <style type="text/css" id="fontLocal"></style>
     <link rel="stylesheet" type="text/css" href="./fonts/font-title.css" id="fontDefaultTitle">
     <link rel="stylesheet" type="text/css" href="./fonts/font-specials.css" id="fontDefaultSpecials">
     <link rel="stylesheet" type="text/css" href="./fonts/font-text.css" id="fontDefaultText">
 </head>
 
-<body class="size0">
+<body class="mobile-steps size0">
     <nav id="main-nav">
-        <a href="index.html" class="tab active">Card Generator</a>
+        <a href="index.html" class="tab">Card Generator</a>
         <a href="trivia.html" class="tab">Trivia</a>
         <a href="favorites.html" class="tab">Favorites</a>
-        <a href="mobile.html" class="tab">Mobile</a>
+        <a href="mobile.html" class="tab active">Mobile</a>
     </nav>
     <table id="table">
         <colgroup>
@@ -153,7 +154,7 @@
             </th>
             <th colspan="2">Harry Potter Card Image Generator (<a id="linkToOriginal" href="https://shemitz.net/static/dominion3/" title="click to pass inputs to the original version">Original</a> &amp; <a target="_blank" rel="nofollow" href="http://forum.dominionstrategy.com/index.php?topic=16622.0" title="show discussion, description and announcements in the forum">Discussion</a>) <span class="heading-credits">Extended Version (<a target="_blank" rel="nofollow" href="https://shadtorrie.github.io/harry-potter-card-generator/" title="view source on github and contribute code">Join Development</a>)</span></th>
         </tr>
-        <tr>
+        <tr data-step="title">
             <td class="doubledForDoubleCards">
                 <div>
                     <label for="title">Title</label>
@@ -167,7 +168,7 @@
                 </div>
             </td>
         </tr>
-        <tr>
+        <tr data-step="description">
             <td class="doubledForDoubleCards hideForPileMarker hideForTrivia">
                 <div>
                     <label for="description">Description</label>
@@ -182,7 +183,7 @@
                 </div>
             </td>
         </tr>
-        <tr>
+        <tr data-step="type">
             <td class="hideForPileMarker hideForMats hideForTrivia">
                 <div>
                     <label for="type">Type</label>
@@ -206,7 +207,7 @@
                 </div>
             </td>
         </tr>
-        <tr>
+        <tr data-step="color">
             <td class="hideForMats doubledForBaseCards doubledForPileMarkers doubledForTraits hideForTrivia">
                 <div>
                     <label for="normalcolor1">Color</label>
@@ -220,6 +221,14 @@
                         <div title="Accent color 1"><input type="number" name="recolor" min="0" max="10" step=".05" value="1" /><input type="number" name="recolor" min="0" max="10" step=".05" value="2" /><input type="number" name="recolor" min="0" max="10" step=".05" value="3" /></div>
                         <div title="Accent color 2"><input type="number" name="recolor" min="0" max="10" step=".05" value="4" /><input type="number" name="recolor" min="0" max="10" step=".05" value="5" /><input type="number" name="recolor" min="0" max="10" step=".05" value="6" /></div>
                     </div>
+                </div>
+            </td>
+        </tr>
+        <tr data-step="price">
+            <td class="hideForPileMarker hideForMats hideForTrivia" id="priceCellMobile">
+                <div>
+                    <label for="price">Price</label>
+                    <input id="price" placeholder="$3" />
                 </div>
             </td>
         </tr>
@@ -274,78 +283,19 @@
                                             </td>
                                         </tr>
                                     </table>
-                                </div>
-                            </td>
-                            <td class="hideForPileMarker hideForTrivia">
-                                <div>
-                                    <label for="expansion">URL of Expansion Icon</label>
-                                    <input id="expansion" type="url" placeholder="http://example.com/expansion.png" />
-                                    <label class="image-upload" title="Use Local Image File"><img src="assets/icon-upload-image.png" alt="Upload" />
-                                        <input id="expansion-upload" type="file" accept="image/*" /></label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="hideForPileMarker hideForTrivia">
-                                <div>
-                                    <label for="credit">Art Credit</label>
-                                    <input id="credit" type="text" placeholder="Illustration: Jane Doe" />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="hideForPileMarker hideForTrivia">
-                                <div>
-                                    <label for="creator">Version &amp; Creator Credit</label>
-                                    <input id="creator" type="text" placeholder="v0.1 John Doe" />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id="priceCell" class="hideForPileMarker hideForMats hideForTrivia">
-                                <div>
-                                    <label for="price">Price</label>
-                                    <input id="price" placeholder="$3" />
-                            </td>
-                            <td id="previewCell" class="hideForPileMarker hideForMats hideForTrivia">
-                                <div>
-                                    <label for="preview"></label>
-                                    <input id="preview" />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="hideForBaseCards hideForPileMarker hideForMats hideForTraits hideForTrivia">
-                                <div>
-                                    <label for="normalcolor2">Color</label>
-                                    <span id="color-switch"><button id="color-switch-button" alt="Switch Colors"><img src="assets/icon-switch.png" />Switch</button></span>
-                                    <select name="normalcolor" id="normalcolor2">
-                                        <option>SAME</option>
-                                    </select>
-                                    <div style="display:none;" title="Card color">
-                                        <input type="number" name="recolor" min="0" max="10" step=".05" value="0.75" /><input type="number" name="recolor" min="0" max="10" step=".05" value="1.1" /><input type="number" name="recolor" min="0" max="10" step=".05" value="1.35" />
-                                    </div>
-                                    <div style="display:none;" title="Card fade color">
-                                        <input type="number" name="recolor" min="0" max="10" step=".05" value="0" /><input type="number" name="recolor" min="0" max="10" step=".05" value="0" /><input type="number" name="recolor" min="0" max="10" step=".05" value="0" />
-                                    </div>
-                                    <div id="color2splitselector" class="hideForLandscape" style="display:none;">
-                                        <label for="color2split">Split Position</label>
-                                        <select name="color2split" id="color2split">
-                                            <option value="18">Smaller Top</option>
-                                            <option value="1" selected="selected">Half</option>
-                                            <option value="19">Smaller Bottom</option>
-                                            <option value="12">Blend Night</option>
-                                            <option value="27">Half Action</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
                     </table>
                 </details>
             </td>
         </tr>
     </table>
+<div id="mobile-navigation">
+    <button id="step-prev">Previous</button>
+    <button id="step-next">Next</button>
+</div>
+<div id="mobile-final">
+    <a href="#" id="mobile-advanced"><button type="button">Continue to Advanced Settings</button></a>
+    <button type="button" id="mobile-save">Save to Favorites</button>
+</div>
 </body>
 
 </html>
