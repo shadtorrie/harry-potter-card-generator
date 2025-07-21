@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mobile Card Maker</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="fonts/font-title.css">
+    <link rel="stylesheet" type="text/css" href="fonts/font-specials.css">
+    <link rel="stylesheet" type="text/css" href="fonts/font-text.css">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</head>
+<body>
+    <div id="wizard"></div>
+    <script src="mobile.js"></script>
+</body>
+</html>

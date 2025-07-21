@@ -882,3 +882,39 @@ body.favorites-page #favorites-list {
     width: 100%;
     box-sizing: border-box;
 }
+
+/* Mobile wizard styles */
+#wizard {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 1em;
+    text-align: center;
+}
+#wizard .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0.5em;
+}
+#wizard button {
+    font-size: 1.2em;
+    padding: 0.6em;
+}
+#wizard iframe {
+    width: 100%;
+    height: 250px;
+    border: none;
+    margin-bottom: 0.5em;
+}
+#wizard input[type="text"],
+#wizard input[type="number"] {
+    width: 100%;
+    padding: 0.6em;
+    font-size: 1.2em;
+    box-sizing: border-box;
+}
+#wizard .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+    margin-top: 0.5em;
+}
