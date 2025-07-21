@@ -1101,6 +1101,9 @@ function initCardImageGenerator() {
         img.alt = icons[key][0];
         btn.appendChild(img);
         btn.appendChild(document.createTextNode(" " + icons[key][0]));
+        // Prevent button from taking focus so the insertion happens at the
+        // currently active input element
+        btn.addEventListener('mousedown', function(e){ e.preventDefault(); });
         btn.addEventListener('click', (function(k){
             return function(){ insertIconText(k); };
         })(key));
