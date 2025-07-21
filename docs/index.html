@@ -29,6 +29,12 @@
     </script>
 
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.get('view') && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            window.location.href = 'mobile.html';
+        }
+    </script>
 
     <script>
         if ('serviceWorker' in navigator) {
