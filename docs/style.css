@@ -836,6 +836,12 @@ html.view-card #table td {
 html.view-card body {
     margin: 0;
     background: white;
+    overflow-x: hidden;
+}
+
+html.view-card #table {
+    width: 100%;
+    margin: 0;
 }
 
 /* Layout adjustments for standalone favorites page */
