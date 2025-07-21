@@ -204,6 +204,23 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td class="hideForMats doubledForBaseCards doubledForPileMarkers doubledForTraits hideForTrivia">
+                <div>
+                    <label for="normalcolor1">Color</label>
+                    <select name="normalcolor" id="normalcolor1">
+                    </select>
+                    <div style="display:none;" title="Card color">
+                        <input type="number" name="recolor" min="0" max="10" step=".05" value="0.75" /><input type="number" name="recolor" min="0" max="10" step=".05" value="1.1" /><input type="number" name="recolor" min="0" max="10" step=".05" value="1.35" />
+                    </div>
+                    <div style="display:none;">
+                        <div title="Card fade color"><input type="number" name="recolor" min="0" max="10" step=".05" value="0" /><input type="number" name="recolor" min="0" max="10" step=".05" value="0" /><input type="number" name="recolor" min="0" max="10" step=".05" value="0" /></div>
+                        <div title="Accent color 1"><input type="number" name="recolor" min="0" max="10" step=".05" value="1" /><input type="number" name="recolor" min="0" max="10" step=".05" value="2" /><input type="number" name="recolor" min="0" max="10" step=".05" value="3" /></div>
+                        <div title="Accent color 2"><input type="number" name="recolor" min="0" max="10" step=".05" value="4" /><input type="number" name="recolor" min="0" max="10" step=".05" value="5" /><input type="number" name="recolor" min="0" max="10" step=".05" value="6" /></div>
+                    </div>
+                </div>
+            </td>
+        </tr>
         <tr id="additional-options">
             <td colspan="2">
                 <details>
@@ -324,23 +341,6 @@
                         </tr>
                     </table>
                 </details>
-            </td>
-        </tr>
-        <tr>
-            <td class="hideForMats doubledForBaseCards doubledForPileMarkers doubledForTraits hideForTrivia">
-                <div>
-                    <label for="normalcolor1">Color</label>
-                    <select name="normalcolor" id="normalcolor1">
-                    </select>
-                    <div style="display:none;" title="Card color">
-                        <input type="number" name="recolor" min="0" max="10" step=".05" value="0.75" /><input type="number" name="recolor" min="0" max="10" step=".05" value="1.1" /><input type="number" name="recolor" min="0" max="10" step=".05" value="1.35" />
-                    </div>
-                    <div style="display:none;">
-                        <div title="Card fade color"><input type="number" name="recolor" min="0" max="10" step=".05" value="0" /><input type="number" name="recolor" min="0" max="10" step=".05" value="0" /><input type="number" name="recolor" min="0" max="10" step=".05" value="0" /></div>
-                        <div title="Accent color 1"><input type="number" name="recolor" min="0" max="10" step=".05" value="1" /><input type="number" name="recolor" min="0" max="10" step=".05" value="2" /><input type="number" name="recolor" min="0" max="10" step=".05" value="3" /></div>
-                        <div title="Accent color 2"><input type="number" name="recolor" min="0" max="10" step=".05" value="4" /><input type="number" name="recolor" min="0" max="10" step=".05" value="5" /><input type="number" name="recolor" min="0" max="10" step=".05" value="6" /></div>
-                    </div>
-                </div>
             </td>
         </tr>
     </table>
