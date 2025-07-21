@@ -631,6 +631,11 @@ body.size6 #legend {
     font-family: mySpecials;
 }
 
+#legend li button {
+    width: 100%;
+    text-align: left;
+}
+
 [name=recolor]:nth-of-type(3n) {
     color: black;
     background: #DDF;
