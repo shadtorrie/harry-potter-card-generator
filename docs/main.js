@@ -1099,6 +1099,9 @@ function initCardImageGenerator() {
         var end = active.selectionEnd;
         active.setRangeText(text, start, end, 'end');
         queueDraw(1);
+        // Manually trigger an input event so any overlays update immediately
+        var ev = new Event('input', { bubbles: true });
+        active.dispatchEvent(ev);
     }
 
     var legend = document.getElementById("legend");

@@ -905,6 +905,8 @@ body.favorites-page #favorites-list {
 }
 .inline-icon {
     height: 1em;
+    width: 1em;
     vertical-align: bottom;
     pointer-events: none;
+    object-fit: contain;
 }
