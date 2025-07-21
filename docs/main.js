@@ -37,6 +37,7 @@ function initCardImageGenerator() {
         "*": ["Sun", "black", "Treasure"],
         "§": ["Custom Icon", "white", "Treasure"]
     };
+    window.ICON_MAP = icons;
     var normalColorFactorLists = [
 		["Action/Event", [1, 1, 1]],
 		["Treasure", [1.1, 0.95, 0.55]],
@@ -1747,6 +1748,7 @@ function Favorites(name) {
 
             favBody.appendChild(tr);
         });
+        setupIconInputs(favBody);
     };
 }
 
@@ -1874,4 +1876,48 @@ class FontHandler {
     triggerChange() {
         document.getElementById("title").onchange();
     }
+}
+
+function textToIconHTML(text) {
+    if (!window.ICON_MAP) { return text; }
+    const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+    return Array.from(text).map(ch => {
+        if (window.ICON_MAP[ch]) {
+            const src = 'card-resources/' + window.ICON_MAP[ch][0] + '.png';
+            return '<img class="inline-icon" src="' + src + '" alt="' + ch + '" />';
+        }
+        return ch.replace(/[&<>]/g, c => escape[c] || c);
+    }).join('');
+}
+
+function setupIconInputs(root) {
+    root = root || document;
+    const elements = root.querySelectorAll('textarea, input[type="text"], input[type="search"], td[contenteditable="true"]');
+    elements.forEach(el => {
+        if (el.dataset.iconized) { return; }
+        el.dataset.iconized = '1';
+        el.classList.add('iconized');
+        el.style.position = el.tagName === 'TD' ? 'relative' : el.style.position;
+        const wrapperNeeded = !(el.tagName === 'TD');
+        let wrapper = el;
+        if (wrapperNeeded) {
+            wrapper = document.createElement('div');
+            wrapper.className = 'icon-wrapper';
+            el.parentNode.insertBefore(wrapper, el);
+            wrapper.appendChild(el);
+        }
+        const overlay = document.createElement('div');
+        overlay.className = 'icon-overlay';
+        wrapper.appendChild(overlay);
+
+        function update() {
+            const value = el.value !== undefined ? el.value : el.textContent;
+            overlay.innerHTML = textToIconHTML(value);
+            overlay.scrollTop = el.scrollTop || 0;
+        }
+
+        el.addEventListener('input', update);
+        el.addEventListener('scroll', () => { overlay.scrollTop = el.scrollTop; });
+        update();
+    });
 }

@@ -882,3 +882,29 @@ body.favorites-page #favorites-list {
     width: 100%;
     box-sizing: border-box;
 }
+
+.icon-wrapper {
+    position: relative;
+}
+.icon-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    white-space: pre-wrap;
+    font: inherit;
+    color: var(--color-input-text);
+    overflow: hidden;
+    padding: inherit;
+}
+.iconized {
+    color: transparent;
+    caret-color: var(--color-input-text);
+}
+.inline-icon {
+    height: 1em;
+    vertical-align: bottom;
+    pointer-events: none;
+}
