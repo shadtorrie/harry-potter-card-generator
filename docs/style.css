@@ -882,3 +882,22 @@ body.favorites-page #favorites-list {
     width: 100%;
     box-sizing: border-box;
 }
+
+/* layout for icon button row */
+#icon-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5em;
+    margin: 1em 0;
+}
+
+#icon-buttons a {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: auto !important;
+}
+
+#icon-buttons button img {
+    margin-right: 0;
+}

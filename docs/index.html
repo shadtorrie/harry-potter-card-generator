@@ -109,15 +109,18 @@
                     <li><span class="def">-</span>: Horizontal Bar</li>
                     <li><span class="def">[i]</span>: Italic Line</li>
                 </ul>
-                <a id="download" target="_blank" title="click to download card image file" download="card.png"><button type="button" onclick="downloadPicture()"><img src="assets/icon-download.png" />Download Card</button></a>
-                <a id="reset" href="?" title="click to reset all fields"><button type="button">Reset</button></a>
+                <div id="icon-buttons">
+                    <a id="download" target="_blank" title="Download Card" download="card.png"><button type="button" onclick="downloadPicture()" title="Download Card"><img src="assets/icon-download.png" alt="Download Card" /></button></a>
                 <script>
                     if (navigator.share) {
                         document.write('<a id="share" rel="nofollow" href="#share" onclick="if(navigator.vibrate){navigator.vibrate(50);};navigator.share({ title: document.title, text: document.title, url: window.location.href, }).catch((error) => console.log(\'Error sharing\', error));" title="Share Link"><button type="button"><img src="assets/icon-share.png" /></button></a>');
                     }
                 </script>
-                <a id="addFavorite" title="click to add current card to favorites"><button type="button" onclick="myFavorites.add( document.location.search )"><img src="assets/icon-favorites.png" />Add to Favorites</button></a>
-                <a id="deleteFavorite" title="click to remove current card from favorites"><button type="button" onclick="myFavorites.deleteByName( document.getElementById('title').value )"><img src="assets/icon-delete.png" />Delete from Favorites</button></a>
+                    <a id="addFavorite" title="Add to Favorites"><button type="button" onclick="myFavorites.add( document.location.search )" title="Add to Favorites"><img src="assets/icon-favorites.png" alt="Add to Favorites" /></button></a>
+                    <a id="deleteFavorite" title="Delete from Favorites"><button type="button" onclick="myFavorites.deleteByName( document.getElementById('title').value )" title="Delete from Favorites"><img src="assets/icon-delete.png" alt="Delete from Favorites" /></button></a>
+                    <a id="openFontSettings" title="Fonts" class="hidden"><button type="button" onclick="myFontSettings.open()" title="Fonts"><img src="assets/icon-settings.png" alt="Fonts" /></button></a>
+                </div>
+                <a id="reset" href="?" title="Reset"><button type="button" title="Reset">Reset</button></a>
                 <div id="manage-favorites" class="popup hidden">
                     <div class="menu">
                         <button type="button" class="delete-all hidden" onclick="myFavorites.deleteAll()"><img src="assets/icon-delete.png" />Delete All</button>
@@ -130,7 +133,6 @@
                     <ul id="favorites-list" class="popup-content"></ul>
                 </div>
 
-                <a id="openFontSettings" title="click to open font settings" class="hidden"><button type="button" onclick="myFontSettings.open()"><img src="assets/icon-settings.png" />Fonts</button></a>
                 <div id="manage-fonts" class="popup hidden">
                     <div class="menu">
                         <button type="button" class="confirm" onclick="myFontSettings.save()">Save</button>
