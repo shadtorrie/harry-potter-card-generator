@@ -882,3 +882,14 @@ body.favorites-page #favorites-list {
     width: 100%;
     box-sizing: border-box;
 }
+
+#favorites-pagination {
+    margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#favorites-pagination button {
+    margin: 0 0.5em;
+}

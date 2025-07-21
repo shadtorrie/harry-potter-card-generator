@@ -1481,6 +1481,16 @@ function Favorites(name) {
     var filters = { title: '', type: '', price: '', description: '', preview: '', type2: '', version: '' };
     var sortCol = null;
     var ascending = true;
+    var pageSize = 20;
+    var currentPage = 0;
+    var prevBtn = document.getElementById('favorites-prev');
+    var nextBtn = document.getElementById('favorites-next');
+    var pageInfo = document.getElementById('favorites-page-info');
+
+    if (prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', () => { if (currentPage > 0) { currentPage--; self.refresh(); }});
+        nextBtn.addEventListener('click', () => { currentPage++; self.refresh(); });
+    }
 
     if (favTable) {
         favTable.querySelectorAll('thead .filters input').forEach(inp => {
@@ -1502,10 +1512,11 @@ function Favorites(name) {
             .join('&');
     }
 
-    function parse(item) {
+    function parse(item, idx) {
         let p = getQueryParams(item);
         return {
             raw: item,
+            index: idx,
             params: p,
             title: (p.title || '').trim(),
             type: (p.type || '').trim(),
@@ -1672,7 +1683,7 @@ function Favorites(name) {
             favBody.removeChild(favBody.firstChild);
         }
 
-        let rows = data.map(parse);
+        let rows = data.map((it, idx) => parse(it, idx));
 
         if (sortCol) {
             rows.sort((a, b) => {
@@ -1694,7 +1705,17 @@ function Favorites(name) {
                    (!filters.version || r.version.toLowerCase().includes(filters.version));
         });
 
-        rows.forEach((item, idx) => {
+        let totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+        if (currentPage >= totalPages) { currentPage = totalPages - 1; }
+        let pageRows = rows.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
+
+        if (pageInfo) {
+            pageInfo.textContent = (currentPage + 1) + ' / ' + totalPages;
+        }
+        if (prevBtn) { prevBtn.disabled = currentPage === 0; }
+        if (nextBtn) { nextBtn.disabled = currentPage >= totalPages - 1; }
+
+        pageRows.forEach(item => {
             let tr = document.createElement('tr');
 
             function saveChanges() {
@@ -1706,7 +1727,9 @@ function Favorites(name) {
                 item.params.type2 = item.type2;
                 item.params.creator = item.version;
                 item.raw = buildQuery(item.params);
-                data[idx] = item.raw;
+                if (item.index !== undefined) {
+                    data[item.index] = item.raw;
+                }
                 localStorage.setItem('favorites', JSON.stringify(data));
             }
 
