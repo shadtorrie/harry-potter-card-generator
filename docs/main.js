@@ -1908,6 +1908,7 @@ function setupIconInputs(root) {
         }
         const overlay = document.createElement('div');
         overlay.className = 'icon-overlay';
+        overlay.setAttribute('contenteditable', 'false');
         wrapper.appendChild(overlay);
 
         function update() {
