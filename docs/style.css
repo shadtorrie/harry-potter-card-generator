@@ -895,9 +895,11 @@ body.favorites-page #favorites-list {
     pointer-events: none;
     white-space: pre-wrap;
     font: inherit;
+    line-height: inherit;
     color: var(--color-input-text);
     overflow: hidden;
     padding: inherit;
+    box-sizing: border-box;
 }
 .iconized {
     color: transparent;
@@ -906,6 +908,7 @@ body.favorites-page #favorites-list {
 .inline-icon {
     position: relative;
     color: transparent;
+    line-height: inherit;
     pointer-events: none;
 }
 .inline-icon::after {
