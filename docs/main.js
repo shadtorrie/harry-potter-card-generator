@@ -1887,7 +1887,8 @@ function textToIconHTML(text) {
     return Array.from(text).map(ch => {
         if (window.ICON_MAP[ch]) {
             const src = 'card-resources/' + window.ICON_MAP[ch][0] + '.png';
-            return '<img class="inline-icon" src="' + src + '" alt="' + ch + '" />';
+            return '<span class="inline-icon" style="--icon:url(' + "'" + src + "'" + ')">' +
+                ch.replace(/[&<>]/g, c => escape[c] || c) + '</span>';
         }
         return ch.replace(/[&<>]/g, c => escape[c] || c);
     }).join('');
