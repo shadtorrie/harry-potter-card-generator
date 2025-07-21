@@ -17,6 +17,12 @@
     <meta name="color-scheme" content="light dark">
 
     <script>
+        if(/Mobi|Android/i.test(navigator.userAgent)){
+            window.location.href = 'mobile.html';
+        }
+    </script>
+
+    <script>
         function setThemeColor(e) {
             if (e.matches) {
                 document.head.querySelector("[name=theme-color][content]").setAttribute("content", "#000000");
