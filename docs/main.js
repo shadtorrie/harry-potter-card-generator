@@ -88,7 +88,15 @@ function initCardImageGenerator() {
 
 
     var normalColorCustomIndices = [0, 0];
-    var normalColorDropdowns = document.getElementsByName("normalcolor");
+    // Explicitly order color dropdowns so that index 0 maps to the primary
+    // color (normalcolor1) and index 1 to the secondary color (normalcolor2).
+    // Relying on getElementsByName would return them in DOM order which
+    // changed when advanced options were grouped, causing the fields to
+    // behave swapped.
+    var normalColorDropdowns = [
+        document.getElementById("normalcolor1"),
+        document.getElementById("normalcolor2")
+    ];
     for (var j = 0; j < normalColorDropdowns.length; ++j) {
         for (var i = 0; i < normalColorFactorLists.length; ++i) { //"- j" because only the first dropdown should have Night
             var option = document.createElement("option");
