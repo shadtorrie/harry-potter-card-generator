@@ -1915,6 +1915,14 @@ function setupIconInputs(root) {
         overlay.setAttribute('contenteditable', 'false');
         wrapper.appendChild(overlay);
 
+        // copy font and padding from the input so the overlay text aligns with
+        // the caret.  This keeps the displayed icon text in sync with the
+        // underlying input metrics.
+        const styles = window.getComputedStyle(el);
+        overlay.style.padding = styles.padding;
+        overlay.style.font = styles.font;
+        overlay.style.lineHeight = styles.lineHeight;
+
         function update() {
             const value = el.value !== undefined ? el.value : el.textContent;
             overlay.innerHTML = textToIconHTML(value);
