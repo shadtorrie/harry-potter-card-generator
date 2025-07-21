@@ -1079,16 +1079,34 @@ function initCardImageGenerator() {
 	];
     for (var i = 0; i < sources.length; i++)
         recoloredImages.push(false);
+
+    function insertIconText(text) {
+        var active = document.activeElement;
+        if (!active || typeof active.selectionStart === 'undefined') return;
+        var start = active.selectionStart;
+        var end = active.selectionEnd;
+        active.setRangeText(text, start, end, 'end');
+        queueDraw(1);
+    }
+
     var legend = document.getElementById("legend");
     var numberFirstIcon = sources.length;
+    var customIconImg = null;
     for (key in icons) {
         var li = document.createElement("li");
-        li.textContent = ": " + icons[key][0];
-        var span = document.createElement("span");
-        span.classList.add("def");
-        span.textContent = key.replace("\\", "");
-        li.insertBefore(span, li.firstChild);
+        var btn = document.createElement("button");
+        btn.type = "button";
+        var img = document.createElement("img");
+        img.src = "card-resources/" + icons[key][0] + ".png";
+        img.alt = icons[key][0];
+        btn.appendChild(img);
+        btn.appendChild(document.createTextNode(" " + icons[key][0]));
+        btn.addEventListener('click', (function(k){
+            return function(){ insertIconText(k); };
+        })(key));
+        li.appendChild(btn);
         legend.insertBefore(li, legend.firstChild);
+        if(key === '§') customIconImg = img;
         sources.push(icons[key][0] + ".png");
     }
     for (var i = 0; i < sources.length; i++) {
@@ -1210,13 +1228,16 @@ function initCardImageGenerator() {
         //Last Icon = Custom Icon
         var customIcon = document.getElementById("custom-icon");
         onChangeExternalImage(images.length - 1, customIcon.value, 156, 156);
+        if(customIconImg) customIconImg.src = images[images.length - 1].src;
         customIcon.onchange = function () {
             document.getElementById("custom-icon-upload").value = "";
             onChangeExternalImage(images.length - 1, this.value, 156, 156);
+            if(customIconImg) customIconImg.src = images[images.length - 1].src;
         };
         document.getElementById("custom-icon-upload").onchange = (event) => {
             customIcon.value = "[local image]";
             onUploadImage(images.length - 1, event.target.files[0]);
+            if(customIconImg) customIconImg.src = images[images.length - 1].src;
         };
     } catch (err) {}
 
