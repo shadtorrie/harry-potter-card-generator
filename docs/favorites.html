@@ -19,10 +19,8 @@
     <div id="manage-favorites">
         <div class="menu">
             <button type="button" class="delete-all hidden" onclick="myFavorites.deleteAll()"><img src="assets/icon-delete.png" />Delete All</button>
-            <button type="button" class="sort" onclick="myFavorites.sort()" title="Sort"><img alt="Sort" src="assets/icon-sort.png" /></button>
             <button type="button" onclick="myFavorites.export()" title="Export"><img alt="Export" src="assets/icon-download.png" /></button>
             <button type="button" onclick="myFavorites.import()" title="Import JSON or CSV"><img alt="Import" src="assets/icon-upload.png" /></button>
-            <input id="favorites-search" type="search" class="search" placeholder="Search..." oninput="myFavorites.search(this.value)" />
         </div>
         <table id="favorites-table" class="popup-content">
             <thead>

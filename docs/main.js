@@ -1556,7 +1556,10 @@ function Favorites(name) {
     this.open = function () {
         this.refresh();
         fav.classList.remove('hidden');
-        document.getElementById('favorites-search').focus();
+        const searchInput = document.getElementById('favorites-search');
+        if (searchInput) {
+            searchInput.focus();
+        }
     };
     this.close = function () {
         fav.classList.add('hidden');
