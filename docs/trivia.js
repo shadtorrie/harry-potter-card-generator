@@ -29,10 +29,7 @@ function loadCard() {
 
 function adjustFrameHeight(f) {
     try {
-        const innerDoc = f.contentWindow.document;
-        const table = innerDoc.getElementById('table');
-        const h = table ? table.offsetHeight : innerDoc.documentElement.scrollHeight;
-        f.style.height = h + 'px';
+        f.style.height = f.contentWindow.document.documentElement.scrollHeight + 'px';
     } catch (e) {}
 }
 
