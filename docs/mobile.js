@@ -39,16 +39,23 @@
             type:card.type||'',
             color0:card.color
         });
+        frame.onload=()=>adjustFrameHeight(frame);
         frame.src = 'index.html'+query+'&view=card';
+    }
+
+    function adjustFrameHeight(f){
+        try {
+            f.style.height = f.contentWindow.document.documentElement.scrollHeight + 'px';
+        } catch (e) {}
     }
 
     function createFrame(){
         const f=document.createElement('iframe');
         f.id='card-frame';
         f.style.width='100%';
-        f.style.height='100vh';
         f.style.border='none';
         f.style.display='block';
+        f.onload=()=>adjustFrameHeight(f);
         return f;
     }
 

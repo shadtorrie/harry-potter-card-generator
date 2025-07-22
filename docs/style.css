@@ -812,7 +812,6 @@ button.delete-all:focus {
 
 #card-frame {
     width: 100%;
-    height: 100vh;
     border: none;
 }
 html.view-card body:before,
@@ -836,10 +835,6 @@ html.view-card #table td {
 html.view-card body {
     margin: 0;
     background: white;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
 }
 
 html.view-card #table {
@@ -910,7 +905,6 @@ body.favorites-page #favorites-list {
 }
 #wizard iframe {
     width: 100%;
-    height: 100vh;
     border: none;
     margin-bottom: 0.5em;
 }
