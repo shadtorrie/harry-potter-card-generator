@@ -46,8 +46,9 @@
         const f=document.createElement('iframe');
         f.id='card-frame';
         f.style.width='100%';
-        f.style.height='250px';
+        f.style.height='100vh';
         f.style.border='none';
+        f.style.display='block';
         return f;
     }
 

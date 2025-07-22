@@ -812,7 +812,7 @@ button.delete-all:focus {
 
 #card-frame {
     width: 100%;
-    height: 1200px;
+    height: 100vh;
     border: none;
 }
 html.view-card body:before,
@@ -836,12 +836,15 @@ html.view-card #table td {
 html.view-card body {
     margin: 0;
     background: white;
-    overflow-x: hidden;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
 }
 
 html.view-card #table {
-    width: 100%;
-    margin: 0;
+    width: auto;
+    margin: auto;
 }
 
 /* Layout adjustments for standalone favorites page */
@@ -907,7 +910,7 @@ body.favorites-page #favorites-list {
 }
 #wizard iframe {
     width: 100%;
-    height: 250px;
+    height: 100vh;
     border: none;
     margin-bottom: 0.5em;
 }
