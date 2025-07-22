@@ -813,6 +813,8 @@ button.delete-all:focus {
 #card-frame {
     width: 100%;
     border: none;
+    display: block;
+    overflow: hidden;
 }
 html.view-card body:before,
 html.view-card body:after,

@@ -45,7 +45,10 @@
 
     function adjustFrameHeight(f){
         try {
-            f.style.height = f.contentWindow.document.documentElement.scrollHeight + 'px';
+            const innerDoc = f.contentWindow.document;
+            const table = innerDoc.getElementById('table');
+            const h = table ? table.offsetHeight : innerDoc.documentElement.scrollHeight;
+            f.style.height = h + 'px';
         } catch (e) {}
     }
 
