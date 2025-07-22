@@ -20,10 +20,17 @@ function loadCard() {
     const sel = triviaCards[Math.floor(Math.random() * triviaCards.length)];
     currentCard = sel;
     const url = 'index.html' + sel + (sel.includes('?') ? '&' : '?') + 'view=card';
+    frame.onload = () => adjustFrameHeight(frame);
     frame.src = url;
     frame.style.display = 'block';
     editBtn.classList.remove('hidden');
     msg.textContent = '';
+}
+
+function adjustFrameHeight(f) {
+    try {
+        f.style.height = f.contentWindow.document.documentElement.scrollHeight + 'px';
+    } catch (e) {}
 }
 
 document.getElementById('next-card').addEventListener('click', loadCard);
