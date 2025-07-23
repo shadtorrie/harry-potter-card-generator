@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mobile Card Maker</title>
+    <title>Mobile Trivia</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="fonts/font-title.css">
     <link rel="stylesheet" type="text/css" href="fonts/font-specials.css">
@@ -20,8 +20,13 @@
         <a href="mobile.html">Card Maker</a>
         <a href="trivia-mobile.html">Trivia</a>
     </nav>
-    <div id="wizard"></div>
-    <script src="mobile.js"></script>
+    <main id="trivia-container">
+        <button id="next-card">Get Trivia Card</button>
+        <button id="edit-card" class="hidden">Edit Card</button>
+        <p id="message"></p>
+        <iframe id="card-frame" title="Trivia Card"></iframe>
+    </main>
+    <script src="trivia.js"></script>
     <script src="menu.js"></script>
 </body>
 </html>

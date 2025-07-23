@@ -927,3 +927,45 @@ body.favorites-page #favorites-list {
     gap: 0.5em;
     margin-top: 0.5em;
 }
+
+/* Mobile side menu */
+#hamburger {
+    position: fixed;
+    top: 0.5em;
+    left: 0.5em;
+    z-index: 200;
+    background: var(--color-background2);
+    color: var(--color-text);
+    border: none;
+    padding: 0.3em 0.5em;
+    font-size: 1.5em;
+}
+
+#side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 200px;
+    background: var(--color-background2);
+    padding-top: 2.5em;
+    transform: translateX(-200px);
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 5px var(--color-shadow1-transparent);
+    z-index: 150;
+}
+
+#side-menu.open {
+    transform: translateX(0);
+}
+
+#side-menu a {
+    display: block;
+    padding: 1em;
+    text-decoration: none;
+    color: var(--color-link);
+}
+
+#side-menu a:hover {
+    background: var(--color-background3);
+}

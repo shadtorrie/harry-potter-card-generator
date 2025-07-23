@@ -3,7 +3,14 @@
 <head>
     <title>Harry Potter Trivia</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && !urlParams.get('view')) {
+            window.location.href = 'trivia-mobile.html';
+        }
+    </script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
