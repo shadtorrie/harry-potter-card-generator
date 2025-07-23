@@ -86,6 +86,13 @@
         wizard.appendChild(grid);
     }
 
+    function resetWizard(){
+        card={};
+        steps=[];
+        current=0;
+        showTypePicker();
+    }
+
     function navButtons(backFn,nextFn,includeSave){
         const div=document.createElement('div');
         div.className='buttons';
@@ -120,7 +127,7 @@
         inp.addEventListener('input',()=>{card.title=inp.value;updateFrame();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(showTypePicker,()=>{current++;showDescription();}));
+        wizard.appendChild(navButtons(resetWizard,()=>{current++;showDescription();}));
         scrollTo(inp);
     }
 
@@ -136,7 +143,7 @@
         inp.addEventListener('input',()=>{card.description=inp.value;updateFrame();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(showTypePicker, steps.length>current+1 ? next : null, true));
+        wizard.appendChild(navButtons(()=>{current--;showTitle();}, steps.length>current+1 ? next : null, true));
         function next(){current++;steps[current]();}
         scrollTo(inp);
     }
@@ -193,7 +200,7 @@
         favs = favs.filter(f => (getQueryParams(f).title||'') !== (card.title||''));
         favs.push(params);
         localStorage.setItem('favorites', JSON.stringify(favs));
-        showTypePicker();
+        resetWizard();
     }
 
     showTypePicker();
