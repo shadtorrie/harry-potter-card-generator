@@ -28,7 +28,10 @@
         return params;
     }
 
+    let updateTimer;
+
     function updateFrame(){
+        clearTimeout(updateTimer);
         const frame = document.getElementById('card-frame');
         if(!frame) return;
         const query = buildQuery({
@@ -41,6 +44,11 @@
         });
         frame.onload=()=>adjustFrameHeight(frame);
         frame.src = 'index.html'+query+'&view=card';
+    }
+
+    function scheduleUpdate(){
+        clearTimeout(updateTimer);
+        updateTimer=setTimeout(updateFrame,1000);
     }
 
     function adjustFrameHeight(f){
@@ -124,7 +132,7 @@
         const inp=document.createElement('input');
         inp.type='text';
         inp.value=card.title||'';
-        inp.addEventListener('input',()=>{card.title=inp.value;updateFrame();});
+        inp.addEventListener('input',()=>{card.title=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
         wizard.appendChild(navButtons(resetWizard,()=>{current++;showDescription();}));
@@ -140,7 +148,7 @@
         const inp=document.createElement('textarea');
         inp.rows=4;
         inp.value=card.description||'';
-        inp.addEventListener('input',()=>{card.description=inp.value;updateFrame();});
+        inp.addEventListener('input',()=>{card.description=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
         wizard.appendChild(navButtons(()=>{current--;showTitle();}, steps.length>current+1 ? next : null, true));
@@ -158,7 +166,7 @@
         const inp=document.createElement('input');
         inp.type='text';
         inp.value=card.price||'';
-        inp.addEventListener('input',()=>{card.price=inp.value;updateFrame();});
+        inp.addEventListener('input',()=>{card.price=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
         let next=null;
@@ -179,7 +187,7 @@
         const inp=document.createElement('input');
         inp.type='text';
         inp.value=card.preview||prefix;
-        inp.addEventListener('input',()=>{card.preview=inp.value;updateFrame();});
+        inp.addEventListener('input',()=>{card.preview=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
         wizard.appendChild(navButtons(()=>{current--; if(card.type==='Trivia'){showDescription();} else {showPrice();}}, null, true));
