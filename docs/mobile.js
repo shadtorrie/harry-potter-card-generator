@@ -130,8 +130,8 @@
         updateFrame();
         const label=document.createElement('p');
         label.textContent= card.type==='Trivia' ? 'Answer' : 'Description';
-        const inp=document.createElement('input');
-        inp.type='text';
+        const inp=document.createElement('textarea');
+        inp.rows=4;
         inp.value=card.description||'';
         inp.addEventListener('input',()=>{card.description=inp.value;updateFrame();});
         wizard.appendChild(label);
