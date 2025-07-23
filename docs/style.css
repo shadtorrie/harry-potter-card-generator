@@ -915,6 +915,12 @@ body.favorites-page #favorites-list {
     font-size: 1.2em;
     box-sizing: border-box;
 }
+#wizard textarea {
+    width: 100%;
+    padding: 0.6em;
+    font-size: 1.2em;
+    box-sizing: border-box;
+}
 #wizard .buttons {
     display: flex;
     justify-content: center;
