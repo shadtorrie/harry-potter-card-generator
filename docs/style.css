@@ -804,6 +804,7 @@ button.delete-all:focus {
 
 #trivia-container {
     padding: 1em;
+    margin-top: 3em;
 }
 
 #trivia-container button {
@@ -890,7 +891,7 @@ body.favorites-page #favorites-list {
 /* Mobile wizard styles */
 #wizard {
     max-width: 500px;
-    margin: 0 auto;
+    margin: 3em auto 0;
     padding: 1em;
     text-align: center;
 }
