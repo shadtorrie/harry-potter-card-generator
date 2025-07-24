@@ -13,6 +13,8 @@
     let card = {};
     let steps = [];
     let current = 0;
+    let editing = false;
+    let originalQuery = '';
 
     function buildQuery(params){
         return '?' + Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
@@ -205,11 +207,41 @@
         });
         let data = localStorage.getItem('favorites');
         let favs = data? JSON.parse(data):[];
-        favs = favs.filter(f => (getQueryParams(f).title||'') !== (card.title||''));
+        if(editing){
+            if(confirm('Overwrite the previous card? Click Cancel to save as new.')){
+                favs = favs.filter(f => f !== ('?' + originalQuery) && f !== originalQuery);
+            }
+        } else {
+            favs = favs.filter(f => (getQueryParams(f).title||'') !== (card.title||''));
+        }
         favs.push(params);
         localStorage.setItem('favorites', JSON.stringify(favs));
         resetWizard();
     }
 
-    showTypePicker();
+    function init(){
+        const params = getQueryParams(window.location.search);
+        if(params.edit !== undefined){
+            editing = true;
+            delete params.edit;
+            originalQuery = Object.keys(params).length ? buildQuery(params).substring(1) : '';
+            card = {
+                title:params.title||'',
+                description:params.description||'',
+                price:params.price||'',
+                preview:params.preview||'',
+                type:params.type||'',
+                color:params.color0
+            };
+            steps=[showTitle, showDescription];
+            if(card.type!=='Trivia') steps.push(showPrice);
+            if(['Treasure','Opponent','Trivia'].includes(card.type)) steps.push(showPreview);
+            current=0;
+            showTitle();
+        } else {
+            showTypePicker();
+        }
+    }
+
+    init();
 })();
