@@ -37,7 +37,8 @@ document.getElementById('next-card').addEventListener('click', loadCard);
 
 document.getElementById('edit-card').addEventListener('click', () => {
     if (currentCard) {
-        window.location.href = 'index.html' + currentCard;
+        const url = 'mobile.html' + currentCard + (currentCard.includes('?') ? '&' : '?') + 'edit=1';
+        window.location.href = url;
     }
 });
 
