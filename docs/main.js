@@ -1729,7 +1729,9 @@ function Favorites(name) {
             let tdEdit = document.createElement('td');
             let bttnEdit = document.createElement('button');
             bttnEdit.setAttribute('class','edit');
-            bttnEdit.onclick = () => { window.location.href = 'index.html' + item.raw; };
+            bttnEdit.onclick = () => {
+                window.location.href = 'mobile.html' + item.raw + '&edit';
+            };
             bttnEdit.appendChild(document.createTextNode('Edit'));
             tdEdit.appendChild(bttnEdit);
             tr.appendChild(tdEdit);

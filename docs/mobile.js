@@ -233,11 +233,15 @@
                 type:params.type||'',
                 color:params.color0
             };
-            steps=[showTitle, showDescription];
-            if(card.type!=='Trivia') steps.push(showPrice);
-            if(['Treasure','Opponent','Trivia'].includes(card.type)) steps.push(showPreview);
-            current=0;
-            showTitle();
+            if(templates[card.type]){
+                steps=[showTitle, showDescription];
+                if(card.type!=='Trivia') steps.push(showPrice);
+                if(['Treasure','Opponent','Trivia'].includes(card.type)) steps.push(showPreview);
+                current=0;
+                showTitle();
+            } else {
+                showTypePicker();
+            }
         } else {
             showTypePicker();
         }
