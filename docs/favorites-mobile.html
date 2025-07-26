@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mobile Favorites</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</head>
+<body class="favorites-page">
+    <button id="hamburger">&#9776;</button>
+    <nav id="side-menu">
+        <a href="mobile.html">Card Maker</a>
+        <a href="trivia-mobile.html">Trivia</a>
+        <a href="favorites-mobile.html">Favorites</a>
+    </nav>
+    <div id="manage-favorites">
+        <div class="menu">
+            <button type="button" class="delete-all hidden" onclick="myFavorites.deleteAll()"><img src="assets/icon-delete.png" />Delete All</button>
+            <button type="button" onclick="myFavorites.export()" title="Export"><img alt="Export" src="assets/icon-download.png" /></button>
+            <button type="button" onclick="myFavorites.import()" title="Import JSON or CSV"><img alt="Import" src="assets/icon-upload.png" /></button>
+        </div>
+        <div class="mobile-table-wrapper">
+            <table id="favorites-table" class="popup-content">
+                <thead>
+                    <tr>
+                        <th data-col="title">Title</th>
+                        <th data-col="type">Type(s)</th>
+                        <th data-col="price">Price</th>
+                        <th data-col="description">Description</th>
+                        <th data-col="preview">Preview</th>
+                        <th data-col="type2">Secondary Type</th>
+                        <th data-col="version">Version #</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr class="filters">
+                        <th><input data-filter="title" type="search" /></th>
+                        <th><input data-filter="type" type="search" /></th>
+                        <th><input data-filter="price" type="search" /></th>
+                        <th><input data-filter="description" type="search" /></th>
+                        <th><input data-filter="preview" type="search" /></th>
+                        <th><input data-filter="type2" type="search" /></th>
+                        <th><input data-filter="version" type="search" /></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script src="menu.js"></script>
+    <script>
+        let myFavorites;
+        window.addEventListener('DOMContentLoaded', () => {
+            myFavorites = new Favorites('myFavorites');
+            myFavorites.refresh();
+        });
+    </script>
+</body>
+</html>
