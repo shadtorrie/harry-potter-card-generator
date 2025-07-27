@@ -2,13 +2,17 @@
     const wizard = document.getElementById('wizard');
 
     const templates = {
-        'Trivia': {color: 3, type:'Trivia'},
-        'Creature': {color:4, type:'Creature'},
-        'Friend': {color:4, type:'Friend'},
-        'Opponent': {color:10, type:'Opponent'},
+        'Trivia': {color: 3, type:'Trivia', size:3},
+        'Creature': {color:4, type:'Action Companion', type2:'Creature'},
+        'Friend': {color:4, type:'Action Companion Legend', type2:'friend'},
+        'Opponent': {color:10, type:'Opponent', size:3},
         'Treasure': {color:1, type:'Treasure'},
+        'Spell': {color:3, type:'Action Spell'},
         'Other': {color:0, type:'Other'}
     };
+
+    const TYPE_OPTIONS=['Action','Opponent','Spell','Companion','Legend','Treasure','Friend','Creature','House','Strike'];
+    const COLOR_OPTIONS=['Action/Event','Treasure','Victory','Spell','Companion','Reserve','Potion','Shelter','Ruins','Landmark','Opponent','Boon','Hex','State','Artifact','Project','Way','Ally','Trait','Prophecy','Gryffindor','Slytherin','Ravenclaw','Hufflepuff'];
 
     let card = {};
     let steps = [];
@@ -36,23 +40,29 @@
         clearTimeout(updateTimer);
         const frame = document.getElementById('card-frame');
         if(!frame) return;
+        let desc = card.description || '';
+        if(card.feed && card.type2 === 'Creature'){
+            desc = (card.description || '') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
+        }
+        if(card.type === 'Opponent'){
+            desc = '';
+            if(card.housePoints) desc += card.housePoints + '%';
+            if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
+            if(card.description){ if(desc) desc += '\n'; desc += card.description; }
+        }
         const query = buildQuery({
-            title:card.title||'',
-            description:card.description||'',
-            price:card.price||'',
-            preview:card.preview||'',
-            type:card.type||'',
-            color0:card.color
+            title: card.title || '',
+            description: desc,
+            price: card.price || '',
+            preview: card.preview || '',
+            type: card.type || '',
+            type2: card.type2 || '',
+            color0: card.color,
+            size: card.size || 0
         });
-        frame.onload=()=>adjustFrameHeight(frame);
-        frame.src = 'index.html'+query+'&view=card';
+        frame.onload = () => adjustFrameHeight(frame);
+        frame.src = 'index.html' + query + '&view=card';
     }
-
-    function scheduleUpdate(){
-        clearTimeout(updateTimer);
-        updateTimer=setTimeout(updateFrame,1000);
-    }
-
     function adjustFrameHeight(f){
         try {
             f.style.height = f.contentWindow.document.documentElement.scrollHeight + 'px';
@@ -83,8 +93,13 @@
             const b=document.createElement('button');
             b.textContent=t;
             b.addEventListener('click',()=>{
-                card=Object.assign({}, templates[t]);
-                steps=[showTitle, showDescription];
+                card=Object.assign({feed:'',housePoints:'',health:'',extraTypes:[],types:[]}, templates[t]);
+                steps=[showTitle];
+                if(t==='Creature') steps.push(showFeed, showDescription);
+                else if(t==='Opponent') steps.push(showHousePoints, showHealth, showDescription);
+                else if(t==='Other') steps.push(showDescription, showOtherTypes, showColor);
+                else if(t==='Spell') steps.push(showDescription, showSpellTypes);
+                else steps.push(showDescription);
                 if(card.type!=='Trivia') steps.push(showPrice);
                 if(['Treasure','Opponent','Trivia'].includes(card.type)) steps.push(showPreview);
                 current=0;
@@ -141,12 +156,15 @@
         scrollTo(inp);
     }
 
-    function showDescription(){
+function showDescription(){
         wizard.innerHTML='';
         wizard.appendChild(createFrame());
         updateFrame();
         const label=document.createElement('p');
-        label.textContent= card.type==='Trivia' ? 'Answer' : 'Description';
+        let lbl='Description';
+        if(card.type==='Trivia') lbl='Answer';
+        else if(card.type==='Opponent') lbl='Attack';
+        label.textContent=lbl;
         const inp=document.createElement('textarea');
         inp.rows=4;
         inp.value=card.description||'';
@@ -156,6 +174,131 @@
         wizard.appendChild(navButtons(()=>{current--;showTitle();}, steps.length>current+1 ? next : null, true));
         function next(){current++;steps[current]();}
         scrollTo(inp);
+}
+
+    function showFeed(){
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        const label=document.createElement('p');
+        label.textContent='How much does it need to be fed?';
+        const inp=document.createElement('input');
+        inp.type='text';
+        inp.value=card.feed||'';
+        inp.addEventListener('input',()=>{card.feed=inp.value;scheduleUpdate();});
+        wizard.appendChild(label);
+        wizard.appendChild(inp);
+        wizard.appendChild(navButtons(()=>{current--;showTitle();}, ()=>{current++;showDescription();}));
+        scrollTo(inp);
+    }
+
+    function showHousePoints(){
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        const label=document.createElement('p');
+        label.textContent='House Point Value';
+        const inp=document.createElement('input');
+        inp.type='text';
+        inp.value=card.housePoints||'';
+        inp.addEventListener('input',()=>{card.housePoints=inp.value;scheduleUpdate();});
+        wizard.appendChild(label);
+        wizard.appendChild(inp);
+        wizard.appendChild(navButtons(()=>{current--;showTitle();}, ()=>{current++;showHealth();}));
+        scrollTo(inp);
+    }
+
+    function showHealth(){
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        const label=document.createElement('p');
+        label.textContent='Health';
+        const inp=document.createElement('input');
+        inp.type='text';
+        inp.value=card.health||'';
+        inp.addEventListener('input',()=>{card.health=inp.value;scheduleUpdate();});
+        wizard.appendChild(label);
+        wizard.appendChild(inp);
+        wizard.appendChild(navButtons(()=>{current--;showHousePoints();}, ()=>{current++;showDescription();}));
+        scrollTo(inp);
+    }
+
+    function showOtherTypes(){
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        const label=document.createElement('p');
+        label.textContent='Card Types';
+        const div=document.createElement('div');
+        div.className='grid';
+        if(!card.types) card.types=[];
+        TYPE_OPTIONS.forEach(t=>{
+            const btn=document.createElement('button');
+            btn.textContent=t;
+            function upd(){card.types.includes(t)?btn.classList.add('selected'):btn.classList.remove('selected');}
+            btn.addEventListener('click',()=>{
+                if(card.types.includes(t)) card.types=card.types.filter(x=>x!==t); else card.types.push(t);
+                const ordered=TYPE_OPTIONS.filter(x=>card.types.includes(x));
+                card.type=ordered.slice(0,2).join(' ');
+                card.type2=ordered.slice(2).join(' ');
+                upd();
+                scheduleUpdate();
+            });
+            upd();
+            div.appendChild(btn);
+        });
+        wizard.appendChild(label);
+        wizard.appendChild(div);
+        wizard.appendChild(navButtons(()=>{current--;showDescription();}, ()=>{current++;showColor();}));
+        scrollTo(div);
+    }
+
+    function showColor(){
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        const label=document.createElement('p');
+        label.textContent='Color';
+        const sel=document.createElement('select');
+        COLOR_OPTIONS.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c;sel.appendChild(o);});
+        sel.value=card.color;
+        sel.addEventListener('change',()=>{card.color=sel.value;scheduleUpdate();});
+        wizard.appendChild(label);
+        wizard.appendChild(sel);
+        let next=steps.length>current+1?()=>{current++;steps[current]();}:null;
+        wizard.appendChild(navButtons(()=>{current--;showOtherTypes();}, next, true));
+        scrollTo(sel);
+    }
+
+    function showSpellTypes(){
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        const label=document.createElement('p');
+        label.textContent='Types';
+        const div=document.createElement('div');
+        div.className='grid';
+        if(!card.extraTypes) card.extraTypes=[];
+        TYPE_OPTIONS.forEach(t=>{
+            const btn=document.createElement('button');
+            btn.textContent=t;
+            function upd(){card.extraTypes.includes(t)?btn.classList.add('selected'):btn.classList.remove('selected');}
+            btn.addEventListener('click',()=>{
+                if(card.extraTypes.includes(t)) card.extraTypes=card.extraTypes.filter(x=>x!==t); else card.extraTypes.push(t);
+                const ordered=['Action','Spell'].concat(card.extraTypes.filter(x=>!['Action','Spell'].includes(x)));
+                card.type=ordered.slice(0,2).join(' ');
+                card.type2=ordered.slice(2).join(' ');
+                upd();
+                scheduleUpdate();
+            });
+            upd();
+            div.appendChild(btn);
+        });
+        wizard.appendChild(label);
+        wizard.appendChild(div);
+        wizard.appendChild(navButtons(()=>{current--;showDescription();}, ()=>{current++;showPrice();}));
+        scrollTo(div);
     }
 
     function showPrice(){
@@ -197,13 +340,25 @@
     }
 
     function saveFavorite(){
+        let desc = card.description || '';
+        if(card.feed && card.type2==='Creature'){
+            desc = (card.description||'') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
+        }
+        if(card.type==='Opponent'){
+            desc = '';
+            if(card.housePoints) desc += card.housePoints + '%';
+            if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
+            if(card.description){ if(desc) desc += '\n'; desc += card.description; }
+        }
         const params = buildQuery({
             title:card.title||'',
-            description:card.description||'',
+            description:desc,
             price:card.price||'',
             preview:card.preview||'',
             type:card.type||'',
-            color0:card.color
+            type2:card.type2||'',
+            color0:card.color,
+            size:card.size||0
         });
         let data = localStorage.getItem('favorites');
         let favs = data? JSON.parse(data):[];
@@ -231,10 +386,18 @@
                 price:params.price||'',
                 preview:params.preview||'',
                 type:params.type||'',
-                color:params.color0
+                type2:params.type2||'',
+                color:params.color0,
+                size:params.size||0,
+                feed:'',housePoints:'',health:'',extraTypes:[],types:[]
             };
             if(templates[card.type]){
-                steps=[showTitle, showDescription];
+                steps=[showTitle];
+                if(card.type2==='Creature') steps.push(showFeed, showDescription);
+                else if(card.type==='Opponent') steps.push(showHousePoints, showHealth, showDescription);
+                else if(card.type==='Other') steps.push(showDescription, showOtherTypes, showColor);
+                else if(card.type==='Action Spell' || card.type==='Spell' || templates['Spell']&&card.type==='Action Spell') steps.push(showDescription, showSpellTypes);
+                else steps.push(showDescription);
                 if(card.type!=='Trivia') steps.push(showPrice);
                 if(['Treasure','Opponent','Trivia'].includes(card.type)) steps.push(showPreview);
                 current=0;
