@@ -118,6 +118,14 @@
         showTypePicker();
     }
 
+    function prevStep(){
+        current--;steps[current]();
+    }
+
+    function nextStep(){
+        current++;steps[current]();
+    }
+
     function navButtons(backFn,nextFn,includeSave){
         const div=document.createElement('div');
         div.className='buttons';
@@ -171,8 +179,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.description=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(()=>{current--;showTitle();}, steps.length>current+1 ? next : null, true));
-        function next(){current++;steps[current]();}
+        wizard.appendChild(navButtons(prevStep, steps.length>current+1 ? nextStep : null, true));
         scrollTo(inp);
 }
 
@@ -314,9 +321,8 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.price=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        let next=null;
-        if(['Treasure','Opponent'].includes(card.type)) next=()=>{current++;showPreview();};
-        wizard.appendChild(navButtons(()=>{current--;showDescription();}, next, true));
+        const next = steps.length>current+1 ? nextStep : null;
+        wizard.appendChild(navButtons(prevStep, next, true));
         scrollTo(inp);
     }
 
@@ -335,7 +341,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.preview=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(()=>{current--; if(card.type==='Trivia'){showDescription();} else {showPrice();}}, null, true));
+        wizard.appendChild(navButtons(prevStep, null, true));
         scrollTo(inp);
     }
 
