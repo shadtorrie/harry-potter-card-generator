@@ -862,6 +862,11 @@ body.favorites-page #manage-favorites .menu {
     background: var(--color-background2);
 }
 
+#hamburger ~ #manage-favorites .menu {
+    /* Make room for the fixed hamburger menu button */
+    padding-left: 3.5em;
+}
+
 body.favorites-page #favorites-list {
     margin-top: 1em;
 }
