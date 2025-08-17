@@ -1730,7 +1730,8 @@ function Favorites(name) {
             let bttnEdit = document.createElement('button');
             bttnEdit.setAttribute('class','edit');
             bttnEdit.onclick = () => {
-                window.location.href = 'mobile.html' + item.raw + '&edit';
+                const editor = window.location.pathname.includes('favorites-mobile') ? 'mobile.html' : 'index.html';
+                window.location.href = editor + item.raw + '&edit';
             };
             bttnEdit.appendChild(document.createTextNode('Edit'));
             tdEdit.appendChild(bttnEdit);
