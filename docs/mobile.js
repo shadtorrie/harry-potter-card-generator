@@ -387,30 +387,32 @@ function showDescription(){
             delete params.edit;
             originalQuery = Object.keys(params).length ? buildQuery(params).substring(1) : '';
             card = {
-                title:params.title||'',
-                description:params.description||'',
-                price:params.price||'',
-                preview:params.preview||'',
-                type:params.type||'',
-                type2:params.type2||'',
-                color:params.color0,
-                size:params.size||0,
-                feed:'',housePoints:'',health:'',extraTypes:[],types:[]
+                title: params.title || '',
+                description: params.description || '',
+                price: params.price || '',
+                preview: params.preview || '',
+                type: params.type || '',
+                type2: params.type2 || '',
+                color: params.color0,
+                size: params.size || 0,
+                feed: '', housePoints: '', health: '', extraTypes: [], types: []
             };
-            if(templates[card.type]){
-                steps=[showTitle];
-                if(card.type2==='Creature') steps.push(showFeed, showDescription);
-                else if(card.type==='Opponent') steps.push(showHousePoints, showHealth, showDescription);
-                else if(card.type==='Other') steps.push(showDescription, showOtherTypes, showColor);
-                else if(card.type==='Action Spell' || card.type==='Spell' || templates['Spell']&&card.type==='Action Spell') steps.push(showDescription, showSpellTypes);
-                else steps.push(showDescription);
-                if(card.type!=='Trivia') steps.push(showPrice);
-                if(['Treasure','Opponent','Trivia'].includes(card.type)) steps.push(showPreview);
-                current=0;
-                showTitle();
+
+            // populate type selections for the 'Other' editor flow
+            card.types = []
+                .concat((card.type || '').split(' '))
+                .concat((card.type2 || '').split(' '))
+                .filter(Boolean)
+                .map(t => t.charAt(0).toUpperCase() + t.slice(1));
+
+            if(card.type === 'Trivia'){
+                steps = [showTitle, showDescription, showPreview];
             } else {
-                showTypePicker();
+                steps = [showTitle, showDescription, showOtherTypes, showColor, showPrice];
+                if(card.preview || ['Treasure','Opponent'].includes(card.type)) steps.push(showPreview);
             }
+            current = 0;
+            showTitle();
         } else {
             showTypePicker();
         }
