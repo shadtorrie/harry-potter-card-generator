@@ -115,6 +115,8 @@
         card={};
         steps=[];
         current=0;
+        editing=false;
+        originalQuery='';
         showTypePicker();
     }
 
