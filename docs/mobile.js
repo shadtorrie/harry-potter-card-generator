@@ -8,17 +8,196 @@
         'Opponent': {color:10, type:'Opponent', size:3},
         'Treasure': {color:1, type:'Treasure'},
         'Spell': {color:3, type:'Action Spell'},
-        'Other': {color:0, type:'Other'}
+        'Other': {color:0, type:'Other'},
+        'General': {generator:'general'}
     };
 
     const TYPE_OPTIONS=['Action','Opponent','Spell','Companion','Legend','Treasure','Friend','Creature','House','Strike'];
     const COLOR_OPTIONS=['Action/Event','Treasure','Victory','Spell','Companion','Reserve','Potion','Shelter','Ruins','Landmark','Opponent','Boon','Hex','State','Artifact','Project','Way','Ally','Trait','Prophecy','Gryffindor','Slytherin','Ravenclaw','Hufflepuff'];
+    const SIZE_OPTIONS=[
+        {value:'0',label:'Portrait'},
+        {value:'1',label:'Landscape'},
+        {value:'2',label:'Double'},
+        {value:'3',label:'Base Card'},
+        {value:'4',label:'Pile Marker'},
+        {value:'5',label:'Player Mat'},
+        {value:'6',label:'Trivia'}
+    ];
+    const COLOR2_SPLIT_OPTIONS=[
+        {value:'18',label:'Smaller Top'},
+        {value:'1',label:'Half'},
+        {value:'19',label:'Smaller Bottom'},
+        {value:'12',label:'Blend Night'},
+        {value:'27',label:'Half Action'}
+    ];
+    const GENERAL_QUERY_KEYS=['size','title','title2','description','description2','type','type2','color0','color1','color2split','traveller','trait','boldkeys','custom-icon','picture','picture-x','picture-y','picture-zoom','expansion','credit','creator','price','preview','generator'];
 
     let card = {};
     let steps = [];
     let current = 0;
     let editing = false;
     let originalQuery = '';
+
+    function createGeneralCard(){
+        return {
+            generator:'general',
+            size:'0',
+            title:'',
+            title2:'',
+            description:'',
+            description2:'',
+            type:'',
+            type2:'',
+            color0:'0',
+            color1:'0',
+            color2split:'1',
+            traveller:false,
+            trait:false,
+            boldkeys:'',
+            'custom-icon':'',
+            picture:'',
+            'picture-x':'0',
+            'picture-y':'0',
+            'picture-zoom':'1',
+            expansion:'',
+            credit:'',
+            creator:'',
+            price:'',
+            preview:'',
+            color:'0'
+        };
+    }
+
+    const GENERAL_FIELDS=[
+        {prop:'size',label:'Card Size',type:'select',options:SIZE_OPTIONS},
+        {prop:'title',label:'Title',type:'textarea',rows:2,placeholder:'Village'},
+        {prop:'title2',label:'Title',type:'text'},
+        {prop:'description',label:'Description',type:'textarea',rows:5,placeholder:'+1 Card\n+2 Actions'},
+        {prop:'description2',label:'Description',type:'textarea',rows:5},
+        {prop:'type',label:'Type',type:'text',placeholder:'Action'},
+        {prop:'type2',label:'Type',type:'text'},
+        {prop:'traveller',label:'Traveller',type:'checkbox'},
+        {prop:'trait',label:'Trait',type:'checkbox'},
+        {prop:'color0',label:'Color',type:'select',options:COLOR_OPTIONS.map((label,idx)=>({value:String(idx),label}))},
+        {prop:'color1',label:'Color',type:'select',options:[{value:'0',label:'SAME'}].concat(COLOR_OPTIONS.map((label,idx)=>({value:String(idx+1),label})))},
+        {prop:'color2split',label:'Split Position',type:'select',options:COLOR2_SPLIT_OPTIONS},
+        {prop:'boldkeys',label:'Additional Bold Keywords',type:'text',placeholder:'Additional boldable keywords; separated by semicolons'},
+        {prop:'custom-icon',label:'Custom Icon',type:'url',placeholder:'http://example.com/icon.png'},
+        {prop:'picture',label:'URL of Illustration',type:'url',placeholder:'http://example.com/image.jpg'},
+        {prop:'picture-x',label:'Position X',type:'range',attrs:{min:'-1',max:'1',step:'0.01'}},
+        {prop:'picture-y',label:'Position Y',type:'range',attrs:{min:'-1',max:'1',step:'0.01'}},
+        {prop:'picture-zoom',label:'Zoom',type:'range',attrs:{min:'0',max:'3',step:'0.1'}},
+        {prop:'expansion',label:'URL of Expansion Icon',type:'url',placeholder:'http://example.com/expansion.png'},
+        {prop:'credit',label:'Art Credit',type:'text',placeholder:'Illustration: Jane Doe'},
+        {prop:'creator',label:'Version & Creator Credit',type:'text',placeholder:'v0.1 John Doe'},
+        {prop:'price',label:'Price',type:'text',placeholder:'$3'},
+        {prop:'preview',label:'Preview',type:'text'}
+    ];
+
+    const generalSteps = GENERAL_FIELDS.map((field,idx)=>()=>renderGeneralField(idx));
+
+    function ensureGeneralDefaults(field, input){
+        if(card[field.prop] === undefined || card[field.prop] === null || card[field.prop] === ''){
+            if(field.type === 'checkbox'){
+                card[field.prop] = false;
+            } else {
+                card[field.prop] = input.value;
+            }
+        }
+    }
+
+    function renderGeneralField(idx){
+        const field = GENERAL_FIELDS[idx];
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        const container=document.createElement('div');
+        container.className='field';
+        if(field.label && field.type!=='checkbox'){
+            const label=document.createElement('p');
+            label.textContent=field.label;
+            container.appendChild(label);
+        }
+        let input;
+        let focusTarget;
+        let appendLater = true;
+        if(field.type==='textarea'){
+            input=document.createElement('textarea');
+            input.rows=field.rows||4;
+            input.value=card[field.prop]||'';
+            if(field.placeholder) input.placeholder=field.placeholder;
+            input.addEventListener('input',()=>{card[field.prop]=input.value;scheduleUpdate();});
+            focusTarget=input;
+        } else if(field.type==='select'){
+            input=document.createElement('select');
+            (field.options||[]).forEach(opt=>{
+                const option=document.createElement('option');
+                option.value=opt.value;
+                option.textContent=opt.label;
+                input.appendChild(option);
+            });
+            let selectedValue = card[field.prop] !== undefined ? String(card[field.prop]) : undefined;
+            if(selectedValue === undefined && field.options && field.options.length){
+                selectedValue = field.options[0].value;
+            }
+            input.value = selectedValue;
+            ensureGeneralDefaults(field, input);
+            input.addEventListener('change',()=>{
+                card[field.prop]=input.value;
+                if(field.prop==='color0'){ card.color = input.value; }
+                scheduleUpdate();
+            });
+            if(field.prop==='color0'){ card.color = input.value; }
+            focusTarget=input;
+        } else if(field.type==='checkbox'){
+            const wrapper=document.createElement('label');
+            wrapper.className='checkbox-option';
+            input=document.createElement('input');
+            input.type='checkbox';
+            input.checked=Boolean(card[field.prop]);
+            input.addEventListener('change',()=>{card[field.prop]=input.checked;scheduleUpdate();});
+            focusTarget=input;
+            wrapper.appendChild(input);
+            const text=document.createElement('span');
+            text.textContent=field.label;
+            wrapper.appendChild(text);
+            container.appendChild(wrapper);
+        } else if(field.type==='range'){
+            input=document.createElement('input');
+            input.type='range';
+            if(field.attrs){
+                Object.keys(field.attrs).forEach(attr=>input.setAttribute(attr,field.attrs[attr]));
+            }
+            const defaultValue = card[field.prop] !== undefined ? String(card[field.prop]) : (field.attrs && field.attrs.min ? field.attrs.min : '0');
+            input.value = defaultValue;
+            ensureGeneralDefaults(field, input);
+            const valueDisplay=document.createElement('div');
+            valueDisplay.className='range-value';
+            valueDisplay.textContent=input.value;
+            input.addEventListener('input',()=>{card[field.prop]=input.value;valueDisplay.textContent=input.value;scheduleUpdate();});
+            container.appendChild(input);
+            container.appendChild(valueDisplay);
+            focusTarget=input;
+            appendLater=false;
+        } else {
+            input=document.createElement('input');
+            input.type=field.type||'text';
+            if(field.placeholder) input.placeholder=field.placeholder;
+            input.value=card[field.prop]||'';
+            input.addEventListener('input',()=>{card[field.prop]=input.value;scheduleUpdate();});
+            focusTarget=input;
+        }
+        if(field.type!=='checkbox' && appendLater){
+            container.appendChild(input);
+        }
+        wizard.appendChild(container);
+        const backFn = idx===0 ? resetWizard : prevStep;
+        const nextFn = idx<GENERAL_FIELDS.length-1 ? nextStep : null;
+        wizard.appendChild(navButtons(backFn,nextFn,true));
+        if(focusTarget){
+            scrollTo(focusTarget);
+        }
+    }
 
     function buildQuery(params){
         return '?' + Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
@@ -41,27 +220,52 @@
         const frame = document.getElementById('card-frame');
         if(!frame) return;
         let desc = card.description || '';
-        if(card.feed && card.type2 === 'Creature'){
-            desc = (card.description || '') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
+        if(card.generator!=='general'){
+            if(card.feed && card.type2 === 'Creature'){
+                desc = (card.description || '') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
+            }
+            if(card.type === 'Opponent'){
+                desc = '';
+                if(card.housePoints) desc += card.housePoints + '%';
+                if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
+                if(card.description){ if(desc) desc += '\n'; desc += card.description; }
+            }
         }
-        if(card.type === 'Opponent'){
-            desc = '';
-            if(card.housePoints) desc += card.housePoints + '%';
-            if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
-            if(card.description){ if(desc) desc += '\n'; desc += card.description; }
-        }
-        const query = buildQuery({
+        const params = {
             title: card.title || '',
             description: desc,
             price: card.price || '',
             preview: card.preview || '',
             type: card.type || '',
             type2: card.type2 || '',
-            color0: card.color,
+            color0: card.color0 !== undefined ? card.color0 : card.color,
             size: card.size || 0
-        });
+        };
+        if(card.generator==='general'){
+            params.generator='general';
+            params.color1 = card.color1 || '0';
+            params.color2split = card.color2split || '1';
+            params.title2 = card.title2 || '';
+            params.description2 = card.description2 || '';
+            params['custom-icon'] = card['custom-icon'] || '';
+            params.boldkeys = card.boldkeys || '';
+            params.picture = card.picture || '';
+            params['picture-x'] = card['picture-x'] || '0';
+            params['picture-y'] = card['picture-y'] || '0';
+            params['picture-zoom'] = card['picture-zoom'] || '1';
+            params.expansion = card.expansion || '';
+            params.credit = card.credit || '';
+            params.creator = card.creator || '';
+            params.traveller = card.traveller ? 'true' : '';
+            params.trait = card.trait ? 'true' : '';
+        }
+        const query = buildQuery(params);
         frame.onload = () => adjustFrameHeight(frame);
         frame.src = 'index.html' + query + '&view=card';
+    }
+    function scheduleUpdate(){
+        clearTimeout(updateTimer);
+        updateTimer = setTimeout(updateFrame,150);
     }
     function adjustFrameHeight(f){
         try {
@@ -93,7 +297,15 @@
             const b=document.createElement('button');
             b.textContent=t;
             b.addEventListener('click',()=>{
-                card=Object.assign({feed:'',housePoints:'',health:'',extraTypes:[],types:[]}, templates[t]);
+                const template = templates[t];
+                if(template.generator==='general'){
+                    card=createGeneralCard();
+                    steps=generalSteps.slice();
+                    current=0;
+                    steps[current]();
+                    return;
+                }
+                card=Object.assign({feed:'',housePoints:'',health:'',extraTypes:[],types:[]}, template);
                 steps=[showTitle];
                 if(t==='Creature') steps.push(showFeed, showDescription);
                 else if(t==='Opponent') steps.push(showHousePoints, showHealth, showDescription);
@@ -349,25 +561,46 @@ function showDescription(){
 
     function saveFavorite(){
         let desc = card.description || '';
-        if(card.feed && card.type2==='Creature'){
-            desc = (card.description||'') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
+        if(card.generator!=='general'){
+            if(card.feed && card.type2==='Creature'){
+                desc = (card.description||'') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
+            }
+            if(card.type==='Opponent'){
+                desc = '';
+                if(card.housePoints) desc += card.housePoints + '%';
+                if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
+                if(card.description){ if(desc) desc += '\n'; desc += card.description; }
+            }
         }
-        if(card.type==='Opponent'){
-            desc = '';
-            if(card.housePoints) desc += card.housePoints + '%';
-            if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
-            if(card.description){ if(desc) desc += '\n'; desc += card.description; }
-        }
-        const params = buildQuery({
+        const paramsObj={
             title:card.title||'',
             description:desc,
             price:card.price||'',
             preview:card.preview||'',
             type:card.type||'',
             type2:card.type2||'',
-            color0:card.color,
+            color0:card.color0 !== undefined ? card.color0 : card.color,
             size:card.size||0
-        });
+        };
+        if(card.generator==='general'){
+            paramsObj.generator='general';
+            paramsObj.color1 = card.color1 || '0';
+            paramsObj.color2split = card.color2split || '1';
+            paramsObj.title2 = card.title2 || '';
+            paramsObj.description2 = card.description2 || '';
+            paramsObj['custom-icon'] = card['custom-icon'] || '';
+            paramsObj.boldkeys = card.boldkeys || '';
+            paramsObj.picture = card.picture || '';
+            paramsObj['picture-x'] = card['picture-x'] || '0';
+            paramsObj['picture-y'] = card['picture-y'] || '0';
+            paramsObj['picture-zoom'] = card['picture-zoom'] || '1';
+            paramsObj.expansion = card.expansion || '';
+            paramsObj.credit = card.credit || '';
+            paramsObj.creator = card.creator || '';
+            paramsObj.traveller = card.traveller ? 'true' : '';
+            paramsObj.trait = card.trait ? 'true' : '';
+        }
+        const params = buildQuery(paramsObj);
         let data = localStorage.getItem('favorites');
         let favs = data? JSON.parse(data):[];
         if(editing){
@@ -388,6 +621,30 @@ function showDescription(){
             editing = true;
             delete params.edit;
             originalQuery = Object.keys(params).length ? buildQuery(params).substring(1) : '';
+            if(params.generator === 'general'){
+                card = createGeneralCard();
+                GENERAL_QUERY_KEYS.forEach(key=>{
+                    if(params[key] !== undefined){
+                        if(key==='traveller' || key==='trait'){
+                            card[key] = params[key] === 'true';
+                        } else if(key==='generator'){
+                            card.generator='general';
+                        } else if(key==='color0'){
+                            card.color0 = params[key];
+                            card.color = params[key];
+                        } else {
+                            card[key] = params[key];
+                        }
+                    }
+                });
+                if(params.size !== undefined){
+                    card.size = params.size;
+                }
+                steps = generalSteps.slice();
+                current = 0;
+                steps[current]();
+                return;
+            }
             card = {
                 title: params.title || '',
                 description: params.description || '',
