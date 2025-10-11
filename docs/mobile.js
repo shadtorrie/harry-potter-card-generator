@@ -8,11 +8,23 @@
         'Opponent': {color:10, type:'Opponent', size:3},
         'Treasure': {color:1, type:'Treasure'},
         'Spell': {color:3, type:'Action Spell'},
-        'Other': {color:0, type:'Other'}
+        'Other': {color:0, type:'Other'},
+        'General': {}
     };
+
+    const GENERAL_SIZE_OPTIONS = [
+        {value:'0', label:'Portrait'},
+        {value:'1', label:'Landscape'},
+        {value:'2', label:'Double'},
+        {value:'3', label:'Base Card'},
+        {value:'4', label:'Pile Marker'},
+        {value:'5', label:'Player Mat'},
+        {value:'6', label:'Trivia'}
+    ];
 
     const TYPE_OPTIONS=['Action','Opponent','Spell','Companion','Legend','Treasure','Friend','Creature','House','Strike'];
     const COLOR_OPTIONS=['Action/Event','Treasure','Victory','Spell','Companion','Reserve','Potion','Shelter','Ruins','Landmark','Opponent','Boon','Hex','State','Artifact','Project','Way','Ally','Trait','Prophecy','Gryffindor','Slytherin','Ravenclaw','Hufflepuff'];
+    const SECONDARY_COLOR_OPTIONS=[{value:'0',label:'SAME'}].concat(COLOR_OPTIONS.map((name,index)=>({value:String(index+1),label:name})));
 
     let card = {};
     let steps = [];
@@ -36,21 +48,23 @@
 
     let updateTimer;
 
-    function updateFrame(){
+    function scheduleUpdate(){
         clearTimeout(updateTimer);
-        const frame = document.getElementById('card-frame');
-        if(!frame) return;
+        updateTimer = setTimeout(updateFrame, 100);
+    }
+
+    function getCardQueryParams(){
         let desc = card.description || '';
-        if(card.feed && card.type2 === 'Creature'){
+        if(card.feed && card.type2 === 'Creature' && card.editor !== 'general'){
             desc = (card.description || '') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
         }
-        if(card.type === 'Opponent'){
+        if(card.type === 'Opponent' && card.editor !== 'general'){
             desc = '';
             if(card.housePoints) desc += card.housePoints + '%';
             if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
             if(card.description){ if(desc) desc += '\n'; desc += card.description; }
         }
-        const query = buildQuery({
+        const params = {
             title: card.title || '',
             description: desc,
             price: card.price || '',
@@ -59,7 +73,31 @@
             type2: card.type2 || '',
             color0: card.color,
             size: card.size || 0
-        });
+        };
+        if(card.editor) params.editor = card.editor;
+        if(card.title2) params.title2 = card.title2;
+        if(card.description2) params.description2 = card.description2;
+        if(card.boldkeys) params.boldkeys = card.boldkeys;
+        if(card.customIcon) params['custom-icon'] = card.customIcon;
+        if(card.picture) params.picture = card.picture;
+        if(card.pictureX !== undefined) params['picture-x'] = card.pictureX;
+        if(card.pictureY !== undefined) params['picture-y'] = card.pictureY;
+        if(card.pictureZoom !== undefined) params['picture-zoom'] = card.pictureZoom;
+        if(card.expansion) params.expansion = card.expansion;
+        if(card.credit) params.credit = card.credit;
+        if(card.creator) params.creator = card.creator;
+        if(card.color1 !== undefined) params.color1 = card.color1;
+        if(card.color2split) params.color2split = card.color2split;
+        if(card.traveller) params.traveller = 'true';
+        if(card.trait) params.trait = 'true';
+        return params;
+    }
+
+    function updateFrame(){
+        clearTimeout(updateTimer);
+        const frame = document.getElementById('card-frame');
+        if(!frame) return;
+        const query = buildQuery(getCardQueryParams());
         frame.onload = () => adjustFrameHeight(frame);
         frame.src = 'index.html' + query + '&view=card';
     }
@@ -93,7 +131,14 @@
             const b=document.createElement('button');
             b.textContent=t;
             b.addEventListener('click',()=>{
+                if(t==='General'){
+                    card=createGeneralDefaults();
+                    startGeneralWizard();
+                    return;
+                }
                 card=Object.assign({feed:'',housePoints:'',health:'',extraTypes:[],types:[]}, templates[t]);
+                card.template=t;
+                card.editor=undefined;
                 steps=[showTitle];
                 if(t==='Creature') steps.push(showFeed, showDescription);
                 else if(t==='Opponent') steps.push(showHousePoints, showHealth, showDescription);
@@ -310,6 +355,261 @@ function showDescription(){
         scrollTo(div);
     }
 
+    function createGeneralDefaults(){
+        return {
+            template:'General',
+            editor:'general',
+            size:'0',
+            title:'',
+            title2:'',
+            description:'',
+            description2:'',
+            type:'',
+            type2:'',
+            traveller:false,
+            trait:false,
+            color:'0',
+            color1:'0',
+            color2split:'1',
+            boldkeys:'',
+            customIcon:'',
+            picture:'',
+            pictureX:'0',
+            pictureY:'0',
+            pictureZoom:'1',
+            expansion:'',
+            credit:'',
+            creator:'',
+            price:'',
+            preview:'',
+            feed:'',
+            housePoints:'',
+            health:'',
+            extraTypes:[],
+            types:[]
+        };
+    }
+
+    function renderGeneralStep(config){
+        wizard.innerHTML='';
+        wizard.appendChild(createFrame());
+        updateFrame();
+        if(config.label !== undefined){
+            const label=document.createElement('p');
+            label.textContent=config.label;
+            wizard.appendChild(label);
+        }
+        const property=config.property;
+        if(config.element==='checkbox' && card[property] === undefined){
+            card[property]=false;
+        }
+        if(card[property] === undefined && config.defaultValue !== undefined){
+            card[property]=config.defaultValue;
+        }
+        let input;
+        let focusTarget;
+        if(config.element==='textarea'){
+            input=document.createElement('textarea');
+            input.rows=config.rows||3;
+            input.value=card[property]||'';
+            input.addEventListener('input',()=>{card[property]=input.value;scheduleUpdate();});
+            wizard.appendChild(input);
+            focusTarget=input;
+        } else if(config.element==='select'){
+            input=document.createElement('select');
+            (config.options||[]).forEach(opt=>{
+                const option=document.createElement('option');
+                option.value=String(opt.value);
+                option.textContent=opt.label;
+                input.appendChild(option);
+            });
+            const value=card[property] !== undefined ? String(card[property]) : '';
+            if(value !== '') input.value=value;
+            else if(config.defaultValue !== undefined) input.value=String(config.defaultValue);
+            card[property]=input.value;
+            input.addEventListener('change',()=>{card[property]=input.value;scheduleUpdate();});
+            wizard.appendChild(input);
+            focusTarget=input;
+        } else if(config.element==='checkbox'){
+            input=document.createElement('input');
+            input.type='checkbox';
+            input.checked=!!card[property];
+            input.addEventListener('change',()=>{card[property]=input.checked;scheduleUpdate();});
+            const checkboxLabel=document.createElement('label');
+            checkboxLabel.appendChild(input);
+            const text=document.createElement('span');
+            text.textContent=config.checkboxLabel||'Enabled';
+            checkboxLabel.appendChild(text);
+            wizard.appendChild(checkboxLabel);
+            focusTarget=input;
+        } else if(config.element==='range'){
+            input=document.createElement('input');
+            input.type='range';
+            if(config.min !== undefined) input.min=config.min;
+            if(config.max !== undefined) input.max=config.max;
+            if(config.step !== undefined) input.step=config.step;
+            const value=card[property] !== undefined ? String(card[property]) : (config.defaultValue !== undefined ? String(config.defaultValue) : '');
+            if(value !== '') input.value=value;
+            const display=document.createElement('div');
+            display.className='value-display';
+            const formatFn=config.format || (val=>val);
+            display.textContent=formatFn(input.value);
+            input.addEventListener('input',()=>{card[property]=input.value;display.textContent=formatFn(input.value);scheduleUpdate();});
+            wizard.appendChild(input);
+            wizard.appendChild(display);
+            focusTarget=input;
+        } else {
+            input=document.createElement('input');
+            input.type=config.inputType||'text';
+            if(config.placeholder) input.placeholder=config.placeholder;
+            const value=card[property] !== undefined ? card[property] : (config.defaultValue !== undefined ? config.defaultValue : '');
+            input.value=value;
+            card[property]=input.value;
+            const eventName=config.event||'input';
+            input.addEventListener(eventName,()=>{card[property]=input.value;scheduleUpdate();});
+            wizard.appendChild(input);
+            focusTarget=input;
+        }
+        if(config.helpText){
+            const help=document.createElement('p');
+            help.className='help-text';
+            help.textContent=config.helpText;
+            wizard.appendChild(help);
+        }
+        const backFn=current===0?resetWizard:prevStep;
+        const nextFn=steps.length>current+1?nextStep:null;
+        wizard.appendChild(navButtons(backFn,nextFn,true));
+        scrollTo(focusTarget||wizard);
+    }
+
+    function showGeneralSize(){
+        renderGeneralStep({label:'Card Size',property:'size',element:'select',options:GENERAL_SIZE_OPTIONS,defaultValue:'0'});
+    }
+
+    function showGeneralTitle(){
+        renderGeneralStep({label:'Title',property:'title',element:'textarea',rows:2});
+    }
+
+    function showGeneralTitle2(){
+        renderGeneralStep({label:'Title',property:'title2',inputType:'text'});
+    }
+
+    function showGeneralDescription(){
+        renderGeneralStep({label:'Description',property:'description',element:'textarea',rows:5});
+    }
+
+    function showGeneralDescription2(){
+        renderGeneralStep({label:'Description',property:'description2',element:'textarea',rows:5});
+    }
+
+    function showGeneralType(){
+        renderGeneralStep({label:'Type',property:'type',inputType:'text'});
+    }
+
+    function showGeneralTraveller(){
+        renderGeneralStep({label:'Traveller',property:'traveller',element:'checkbox',checkboxLabel:'Enabled'});
+    }
+
+    function showGeneralTrait(){
+        renderGeneralStep({label:'Trait',property:'trait',element:'checkbox',checkboxLabel:'Enabled'});
+    }
+
+    function showGeneralType2(){
+        renderGeneralStep({label:'Secondary Type',property:'type2',inputType:'text'});
+    }
+
+    function showGeneralPrimaryColor(){
+        renderGeneralStep({label:'Color',property:'color',element:'select',options:COLOR_OPTIONS.map((name,index)=>({value:String(index),label:name})),defaultValue:'0'});
+    }
+
+    function showGeneralBoldKeys(){
+        renderGeneralStep({label:'Additional Bold Keywords',property:'boldkeys',inputType:'text',placeholder:'Additional boldable keywords; separated by semicolons'});
+    }
+
+    function showGeneralCustomIcon(){
+        renderGeneralStep({label:'Custom Icon',property:'customIcon',inputType:'url',placeholder:'http://example.com/icon.png'});
+    }
+
+    function showGeneralPicture(){
+        renderGeneralStep({label:'URL of Illustration',property:'picture',inputType:'url',placeholder:'http://example.com/image.jpg'});
+    }
+
+    function showGeneralPictureX(){
+        renderGeneralStep({label:'Position X:',property:'pictureX',element:'range',min:'-1',max:'1',step:'0.01',defaultValue:'0',format:val=>Number(val).toFixed(2)});
+    }
+
+    function showGeneralPictureY(){
+        renderGeneralStep({label:'Position Y:',property:'pictureY',element:'range',min:'-1',max:'1',step:'0.01',defaultValue:'0',format:val=>Number(val).toFixed(2)});
+    }
+
+    function showGeneralPictureZoom(){
+        renderGeneralStep({label:'Zoom:',property:'pictureZoom',element:'range',min:'0',max:'3',step:'0.1',defaultValue:'1',format:val=>Number(val).toFixed(1)});
+    }
+
+    function showGeneralExpansion(){
+        renderGeneralStep({label:'URL of Expansion Icon',property:'expansion',inputType:'url',placeholder:'http://example.com/expansion.png'});
+    }
+
+    function showGeneralCredit(){
+        renderGeneralStep({label:'Art Credit',property:'credit',inputType:'text',placeholder:'Illustration: Jane Doe'});
+    }
+
+    function showGeneralCreator(){
+        renderGeneralStep({label:'Version & Creator Credit',property:'creator',inputType:'text',placeholder:'v0.1 John Doe'});
+    }
+
+    function showGeneralPrice(){
+        renderGeneralStep({label:'Price',property:'price',inputType:'text',placeholder:'$3'});
+    }
+
+    function showGeneralPreview(){
+        renderGeneralStep({label:'Preview',property:'preview',inputType:'text'});
+    }
+
+    function showGeneralSecondaryColor(){
+        renderGeneralStep({label:'Color',property:'color1',element:'select',options:SECONDARY_COLOR_OPTIONS,defaultValue:'0'});
+    }
+
+    function showGeneralColorSplit(){
+        renderGeneralStep({label:'Split Position',property:'color2split',element:'select',options:[
+            {value:'18',label:'Smaller Top'},
+            {value:'1',label:'Half'},
+            {value:'19',label:'Smaller Bottom'},
+            {value:'12',label:'Blend Night'},
+            {value:'27',label:'Half Action'}
+        ],defaultValue:'1'});
+    }
+
+    function startGeneralWizard(){
+        steps=[
+            showGeneralSize,
+            showGeneralTitle,
+            showGeneralTitle2,
+            showGeneralDescription,
+            showGeneralDescription2,
+            showGeneralType,
+            showGeneralTraveller,
+            showGeneralTrait,
+            showGeneralType2,
+            showGeneralPrimaryColor,
+            showGeneralBoldKeys,
+            showGeneralCustomIcon,
+            showGeneralPicture,
+            showGeneralPictureX,
+            showGeneralPictureY,
+            showGeneralPictureZoom,
+            showGeneralExpansion,
+            showGeneralCredit,
+            showGeneralCreator,
+            showGeneralPrice,
+            showGeneralPreview,
+            showGeneralSecondaryColor,
+            showGeneralColorSplit
+        ];
+        current=0;
+        steps[current]();
+    }
+
     function showPrice(){
         if(card.type==='Trivia'){ showPreview(); return; }
         wizard.innerHTML='';
@@ -348,26 +648,7 @@ function showDescription(){
     }
 
     function saveFavorite(){
-        let desc = card.description || '';
-        if(card.feed && card.type2==='Creature'){
-            desc = (card.description||'') + '\n-\nAt the end of your turn feed this ' + card.feed + '& or discard it.';
-        }
-        if(card.type==='Opponent'){
-            desc = '';
-            if(card.housePoints) desc += card.housePoints + '%';
-            if(card.health){ if(desc) desc += '\n'; desc += card.health + '~'; }
-            if(card.description){ if(desc) desc += '\n'; desc += card.description; }
-        }
-        const params = buildQuery({
-            title:card.title||'',
-            description:desc,
-            price:card.price||'',
-            preview:card.preview||'',
-            type:card.type||'',
-            type2:card.type2||'',
-            color0:card.color,
-            size:card.size||0
-        });
+        const queryString = buildQuery(getCardQueryParams());
         let data = localStorage.getItem('favorites');
         let favs = data? JSON.parse(data):[];
         if(editing){
@@ -377,7 +658,7 @@ function showDescription(){
         } else {
             favs = favs.filter(f => (getQueryParams(f).title||'') !== (card.title||''));
         }
-        favs.push(params);
+        favs.push(queryString);
         localStorage.setItem('favorites', JSON.stringify(favs));
         resetWizard();
     }
@@ -388,6 +669,34 @@ function showDescription(){
             editing = true;
             delete params.edit;
             originalQuery = Object.keys(params).length ? buildQuery(params).substring(1) : '';
+            if(params.editor === 'general'){
+                card = createGeneralDefaults();
+                card.title = params.title || '';
+                card.title2 = params.title2 || '';
+                card.description = params.description || '';
+                card.description2 = params.description2 || '';
+                card.price = params.price || '';
+                card.preview = params.preview || '';
+                card.type = params.type || '';
+                card.type2 = params.type2 || '';
+                card.color = params.color0 !== undefined ? params.color0 : '0';
+                card.color1 = params.color1 !== undefined ? params.color1 : '0';
+                card.color2split = params.color2split || '1';
+                card.picture = params.picture || '';
+                card.pictureX = params['picture-x'] !== undefined ? params['picture-x'] : '0';
+                card.pictureY = params['picture-y'] !== undefined ? params['picture-y'] : '0';
+                card.pictureZoom = params['picture-zoom'] !== undefined ? params['picture-zoom'] : '1';
+                card.expansion = params.expansion || '';
+                card.customIcon = params['custom-icon'] || '';
+                card.boldkeys = params.boldkeys || '';
+                card.credit = params.credit || '';
+                card.creator = params.creator || '';
+                card.traveller = params.traveller === 'true';
+                card.trait = params.trait === 'true';
+                card.size = params.size !== undefined ? params.size : '0';
+                startGeneralWizard();
+                return;
+            }
             card = {
                 title: params.title || '',
                 description: params.description || '',
