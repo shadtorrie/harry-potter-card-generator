@@ -21,7 +21,10 @@
     let originalQuery = '';
 
     function buildQuery(params){
-        return '?' + Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
+        const entries = Object.keys(params)
+            .filter(k => params[k] !== undefined && params[k] !== null)
+            .map(k => encodeURIComponent(k)+'='+encodeURIComponent(params[k]));
+        return '?' + entries.join('&');
     }
 
     function getQueryParams(qs){
@@ -35,6 +38,11 @@
     }
 
     let updateTimer;
+
+    function scheduleUpdate(){
+        clearTimeout(updateTimer);
+        updateTimer = setTimeout(updateFrame, 200);
+    }
 
     function updateFrame(){
         clearTimeout(updateTimer);
@@ -58,7 +66,11 @@
             type: card.type || '',
             type2: card.type2 || '',
             color0: card.color,
-            size: card.size || 0
+            size: card.size || 0,
+            feed: card.feed || '',
+            housePoints: card.housePoints || '',
+            health: card.health || '',
+            template: card.template || ''
         });
         frame.onload = () => adjustFrameHeight(frame);
         frame.src = 'index.html' + query + '&view=card';
@@ -94,16 +106,11 @@
             b.textContent=t;
             b.addEventListener('click',()=>{
                 card=Object.assign({feed:'',housePoints:'',health:'',extraTypes:[],types:[]}, templates[t]);
-                steps=[showTitle];
-                if(t==='Creature') steps.push(showFeed, showDescription);
-                else if(t==='Opponent') steps.push(showHousePoints, showHealth, showDescription);
-                else if(t==='Other') steps.push(showDescription, showOtherTypes, showColor);
-                else if(t==='Spell') steps.push(showDescription, showSpellTypes);
-                else steps.push(showDescription);
-                if(card.type!=='Trivia') steps.push(showPrice);
-                if(['Treasure','Opponent','Trivia'].includes(card.type)) steps.push(showPreview);
-                current=0;
-                showTitle();
+                card.template = t;
+                card.color = (card.color !== undefined && card.color !== null) ? String(card.color) : '0';
+                card.size = card.size || 0;
+                steps = buildStepsForCard();
+                goToStep(0);
             });
             grid.appendChild(b);
         });
@@ -120,15 +127,79 @@
         showTypePicker();
     }
 
+    function inferTemplateFromCard(){
+        if(card.template) return card.template;
+        const type = (card.type || '').toLowerCase();
+        const type2 = (card.type2 || '').toLowerCase();
+        for(const key of Object.keys(templates)){
+            const tpl = templates[key];
+            const tplType = (tpl.type || '').toLowerCase();
+            const tplType2 = (tpl.type2 || '').toLowerCase();
+            if(tplType === type && (tplType2 || '') === type2){
+                return key;
+            }
+        }
+        if(type2 === 'creature') return 'Creature';
+        if(type === 'opponent') return 'Opponent';
+        if(type.includes('spell')) return 'Spell';
+        if(type.includes('treasure')) return 'Treasure';
+        if(type.includes('trivia')) return 'Trivia';
+        if(type.includes('friend')) return 'Friend';
+        return 'Other';
+    }
+
+    function buildStepsForCard(){
+        card.template = inferTemplateFromCard();
+        const order=[showTitle];
+        switch(card.template){
+            case 'Creature':
+                order.push(showFeed, showDescription);
+                break;
+            case 'Opponent':
+                order.push(showHousePoints, showHealth, showDescription);
+                break;
+            case 'Other':
+                order.push(showDescription, showOtherTypes, showColor);
+                break;
+            case 'Spell':
+                order.push(showDescription, showSpellTypes);
+                break;
+            default:
+                order.push(showDescription);
+                break;
+        }
+        if(card.type !== 'Trivia'){
+            order.push(showPrice);
+        }
+        if(['Treasure','Opponent','Trivia'].includes(card.type)){
+            order.push(showPreview);
+        }
+        return order;
+    }
+
+    function goToStep(index){
+        current = index;
+        steps[current]();
+    }
+
     function prevStep(){
-        current--;steps[current]();
+        if(current === 0){
+            resetWizard();
+        } else {
+            goToStep(current - 1);
+        }
     }
 
     function nextStep(){
-        current++;steps[current]();
+        if(current < steps.length - 1){
+            goToStep(current + 1);
+        }
     }
 
-    function navButtons(backFn,nextFn,includeSave){
+    function navButtons(backFn=prevStep,nextFn){
+        if(nextFn === undefined){
+            nextFn = current < steps.length - 1 ? nextStep : null;
+        }
         const div=document.createElement('div');
         div.className='buttons';
         const back=document.createElement('button');
@@ -141,12 +212,10 @@
             next.onclick=nextFn;
             div.appendChild(next);
         }
-        if(includeSave){
-            const save=document.createElement('button');
-            save.textContent='Save';
-            save.onclick=saveFavorite;
-            div.appendChild(save);
-        }
+        const save=document.createElement('button');
+        save.textContent='Save';
+        save.onclick=saveFavorite;
+        div.appendChild(save);
         return div;
     }
 
@@ -162,11 +231,11 @@
         inp.addEventListener('input',()=>{card.title=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(resetWizard,()=>{current++;showDescription();}));
+        wizard.appendChild(navButtons());
         scrollTo(inp);
     }
 
-function showDescription(){
+    function showDescription(){
         wizard.innerHTML='';
         wizard.appendChild(createFrame());
         updateFrame();
@@ -181,7 +250,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.description=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(prevStep, steps.length>current+1 ? nextStep : null, true));
+        wizard.appendChild(navButtons());
         scrollTo(inp);
 }
 
@@ -197,7 +266,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.feed=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(()=>{current--;showTitle();}, ()=>{current++;showDescription();}));
+        wizard.appendChild(navButtons());
         scrollTo(inp);
     }
 
@@ -213,7 +282,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.housePoints=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(()=>{current--;showTitle();}, ()=>{current++;showHealth();}));
+        wizard.appendChild(navButtons());
         scrollTo(inp);
     }
 
@@ -229,7 +298,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.health=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(()=>{current--;showHousePoints();}, ()=>{current++;showDescription();}));
+        wizard.appendChild(navButtons());
         scrollTo(inp);
     }
 
@@ -259,7 +328,7 @@ function showDescription(){
         });
         wizard.appendChild(label);
         wizard.appendChild(div);
-        wizard.appendChild(navButtons(()=>{current--;showDescription();}, ()=>{current++;showColor();}));
+        wizard.appendChild(navButtons());
         scrollTo(div);
     }
 
@@ -275,8 +344,7 @@ function showDescription(){
         sel.addEventListener('change',()=>{card.color=sel.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(sel);
-        let next=steps.length>current+1?()=>{current++;steps[current]();}:null;
-        wizard.appendChild(navButtons(()=>{current--;showOtherTypes();}, next, true));
+        wizard.appendChild(navButtons());
         scrollTo(sel);
     }
 
@@ -306,7 +374,7 @@ function showDescription(){
         });
         wizard.appendChild(label);
         wizard.appendChild(div);
-        wizard.appendChild(navButtons(()=>{current--;showDescription();}, ()=>{current++;showPrice();}));
+        wizard.appendChild(navButtons());
         scrollTo(div);
     }
 
@@ -323,8 +391,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.price=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        const next = steps.length>current+1 ? nextStep : null;
-        wizard.appendChild(navButtons(prevStep, next, true));
+        wizard.appendChild(navButtons());
         scrollTo(inp);
     }
 
@@ -343,7 +410,7 @@ function showDescription(){
         inp.addEventListener('input',()=>{card.preview=inp.value;scheduleUpdate();});
         wizard.appendChild(label);
         wizard.appendChild(inp);
-        wizard.appendChild(navButtons(prevStep, null, true));
+        wizard.appendChild(navButtons(prevStep, null));
         scrollTo(inp);
     }
 
@@ -366,7 +433,11 @@ function showDescription(){
             type:card.type||'',
             type2:card.type2||'',
             color0:card.color,
-            size:card.size||0
+            size:card.size||0,
+            feed:card.feed||'',
+            housePoints:card.housePoints||'',
+            health:card.health||'',
+            template:card.template||''
         });
         let data = localStorage.getItem('favorites');
         let favs = data? JSON.parse(data):[];
@@ -397,24 +468,34 @@ function showDescription(){
                 type2: params.type2 || '',
                 color: params.color0,
                 size: params.size || 0,
-                feed: '', housePoints: '', health: '', extraTypes: [], types: []
+                feed: params.feed || '',
+                housePoints: params.housePoints || '',
+                health: params.health || '',
+                extraTypes: [],
+                types: [],
+                template: params.template
             };
 
-            // populate type selections for the 'Other' editor flow
-            card.types = []
+            const parts = []
                 .concat((card.type || '').split(' '))
                 .concat((card.type2 || '').split(' '))
                 .filter(Boolean)
                 .map(t => t.charAt(0).toUpperCase() + t.slice(1));
+            card.types = parts.slice();
+            card.extraTypes = parts.filter(t => !['Action','Spell'].includes(t));
 
-            if(card.type === 'Trivia'){
-                steps = [showTitle, showDescription, showPreview];
+            const inferredTemplate = card.template || inferTemplateFromCard();
+            card.template = inferredTemplate;
+            const tpl = templates[inferredTemplate] || {};
+            if(card.color === undefined || card.color === null || card.color === ''){
+                card.color = tpl.color !== undefined ? String(tpl.color) : '0';
             } else {
-                steps = [showTitle, showDescription, showOtherTypes, showColor, showPrice];
-                if(card.preview || ['Treasure','Opponent'].includes(card.type)) steps.push(showPreview);
+                card.color = String(card.color);
             }
-            current = 0;
-            showTitle();
+            card.size = card.size || 0;
+
+            steps = buildStepsForCard();
+            goToStep(0);
         } else {
             showTypePicker();
         }
