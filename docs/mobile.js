@@ -487,19 +487,19 @@ function showDescription(){
     }
 
     function showGeneralTitle(){
-        renderGeneralStep({label:'Title',property:'title',element:'textarea',rows:2});
+        renderGeneralStep({label:'Primary Title',property:'title',element:'textarea',rows:2});
     }
 
     function showGeneralTitle2(){
-        renderGeneralStep({label:'Title',property:'title2',inputType:'text'});
+        renderGeneralStep({label:'Secondary Title',property:'title2',inputType:'text'});
     }
 
     function showGeneralDescription(){
-        renderGeneralStep({label:'Description',property:'description',element:'textarea',rows:5});
+        renderGeneralStep({label:'Primary Description',property:'description',element:'textarea',rows:5});
     }
 
     function showGeneralDescription2(){
-        renderGeneralStep({label:'Description',property:'description2',element:'textarea',rows:5});
+        renderGeneralStep({label:'Secondary Description',property:'description2',element:'textarea',rows:5});
     }
 
     function showGeneralType(){
