@@ -390,6 +390,65 @@ function showDescription(){
         };
     }
 
+    function detectFlowFromParams(params){
+        const editor = (params.editor || '').toLowerCase();
+        if (editor === 'general') {
+            return 'general';
+        }
+        const type = (params.type || '').trim().toLowerCase();
+        const type2 = (params.type2 || '').trim().toLowerCase();
+        if (type === 'trivia') {
+            return 'trivia';
+        }
+        if (type === 'opponent') {
+            return 'opponent';
+        }
+        if (type === 'treasure') {
+            return 'treasure';
+        }
+        if (type.includes('spell')) {
+            return 'spell';
+        }
+        if (type.includes('companion') && type2 === 'creature') {
+            return 'creature';
+        }
+        if (type.includes('companion') && type2 === 'friend') {
+            return 'friend';
+        }
+        if (type === 'other') {
+            return 'other';
+        }
+        return null;
+    }
+
+    function openGeneralEditorFromParams(params){
+        card = createGeneralDefaults();
+        card.title = params.title || '';
+        card.title2 = params.title2 || '';
+        card.description = params.description || '';
+        card.description2 = params.description2 || '';
+        card.price = params.price || '';
+        card.preview = params.preview || '';
+        card.type = params.type || '';
+        card.type2 = params.type2 || '';
+        card.color = params.color0 !== undefined ? params.color0 : '0';
+        card.color1 = params.color1 !== undefined ? params.color1 : '0';
+        card.color2split = params.color2split || '1';
+        card.picture = params.picture || '';
+        card.pictureX = params['picture-x'] !== undefined ? params['picture-x'] : '0';
+        card.pictureY = params['picture-y'] !== undefined ? params['picture-y'] : '0';
+        card.pictureZoom = params['picture-zoom'] !== undefined ? params['picture-zoom'] : '1';
+        card.expansion = params.expansion || '';
+        card.customIcon = params['custom-icon'] || '';
+        card.boldkeys = params.boldkeys || '';
+        card.credit = params.credit || '';
+        card.creator = params.creator || '';
+        card.traveller = params.traveller === 'true';
+        card.trait = params.trait === 'true';
+        card.size = params.size !== undefined ? params.size : '0';
+        startGeneralWizard();
+    }
+
     function renderGeneralStep(config){
         wizard.innerHTML='';
         wizard.appendChild(createFrame());
@@ -669,32 +728,9 @@ function showDescription(){
             editing = true;
             delete params.edit;
             originalQuery = Object.keys(params).length ? buildQuery(params).substring(1) : '';
-            if(params.editor === 'general'){
-                card = createGeneralDefaults();
-                card.title = params.title || '';
-                card.title2 = params.title2 || '';
-                card.description = params.description || '';
-                card.description2 = params.description2 || '';
-                card.price = params.price || '';
-                card.preview = params.preview || '';
-                card.type = params.type || '';
-                card.type2 = params.type2 || '';
-                card.color = params.color0 !== undefined ? params.color0 : '0';
-                card.color1 = params.color1 !== undefined ? params.color1 : '0';
-                card.color2split = params.color2split || '1';
-                card.picture = params.picture || '';
-                card.pictureX = params['picture-x'] !== undefined ? params['picture-x'] : '0';
-                card.pictureY = params['picture-y'] !== undefined ? params['picture-y'] : '0';
-                card.pictureZoom = params['picture-zoom'] !== undefined ? params['picture-zoom'] : '1';
-                card.expansion = params.expansion || '';
-                card.customIcon = params['custom-icon'] || '';
-                card.boldkeys = params.boldkeys || '';
-                card.credit = params.credit || '';
-                card.creator = params.creator || '';
-                card.traveller = params.traveller === 'true';
-                card.trait = params.trait === 'true';
-                card.size = params.size !== undefined ? params.size : '0';
-                startGeneralWizard();
+            const detectedFlow = detectFlowFromParams(params);
+            if(detectedFlow === 'general' || detectedFlow === null){
+                openGeneralEditorFromParams(params);
                 return;
             }
             card = {
@@ -716,7 +752,7 @@ function showDescription(){
                 .filter(Boolean)
                 .map(t => t.charAt(0).toUpperCase() + t.slice(1));
 
-            if(card.type === 'Trivia'){
+            if(detectedFlow === 'trivia'){
                 steps = [showTitle, showDescription, showPreview];
             } else {
                 steps = [showTitle, showDescription, showOtherTypes, showColor, showPrice];

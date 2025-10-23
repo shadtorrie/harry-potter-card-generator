@@ -939,6 +939,35 @@ body.favorites-page #favorites-list {
     margin-top: 0.5em;
 }
 
+/* Mobile card view */
+.mobile-view-page #mobile-card-view {
+    max-width: 500px;
+    margin: 3em auto;
+    padding: 1em;
+    text-align: center;
+}
+
+.mobile-view-page #mobile-card-view iframe {
+    width: 100%;
+    border: none;
+    margin-bottom: 1em;
+}
+
+.mobile-view-page #mobile-card-view .message {
+    margin-bottom: 1em;
+}
+
+#mobile-view-actions {
+    display: flex;
+    justify-content: center;
+}
+
+#mobile-view-actions button {
+    flex: 1;
+    font-size: 1.2em;
+    padding: 0.6em;
+}
+
 /* Mobile side menu */
 #hamburger {
     position: fixed;

@@ -1694,6 +1694,8 @@ function Favorites(name) {
                    (!filters.version || r.version.toLowerCase().includes(filters.version));
         });
 
+        const isMobileFavoritesPage = window.location.pathname.includes('favorites-mobile');
+
         rows.forEach((item, idx) => {
             let tr = document.createElement('tr');
 
@@ -1725,6 +1727,23 @@ function Favorites(name) {
             ['type','price','description','preview','type2','version'].forEach(k => {
                 makeEditableCell(k);
             });
+
+            let tdView = document.createElement('td');
+            let bttnView = document.createElement('button');
+            bttnView.setAttribute('class','view');
+            bttnView.type = 'button';
+            bttnView.textContent = 'View';
+            bttnView.onclick = () => {
+                const base = isMobileFavoritesPage ? 'mobile-view.html' : 'index.html';
+                const hasViewParam = /[?&]view=/.test(item.raw);
+                let target = base + item.raw;
+                if (!isMobileFavoritesPage && !hasViewParam) {
+                    target += '&view=card';
+                }
+                window.location.href = target;
+            };
+            tdView.appendChild(bttnView);
+            tr.appendChild(tdView);
 
             let tdEdit = document.createElement('td');
             let bttnEdit = document.createElement('button');

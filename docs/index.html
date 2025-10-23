@@ -31,8 +31,14 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        if (!urlParams.get('view') && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            window.location.href = 'mobile.html';
+        const hasQuery = window.location.search && window.location.search.length > 1;
+        const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!urlParams.get('view') && isMobileDevice) {
+            if (hasQuery) {
+                window.location.href = 'mobile-view.html' + window.location.search;
+            } else {
+                window.location.href = 'mobile.html';
+            }
         }
     </script>
 
