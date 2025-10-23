@@ -582,16 +582,20 @@ function showDescription(){
 
     function startGeneralWizard(){
         steps=[
-            showGeneralSize,
             showGeneralTitle,
-            showGeneralTitle2,
             showGeneralDescription,
-            showGeneralDescription2,
+            showGeneralPrice,
+            showGeneralPreview,
+            showGeneralPrimaryColor,
+            showGeneralSecondaryColor,
+            showGeneralColorSplit,
             showGeneralType,
+            showGeneralType2,
+            showGeneralSize,
             showGeneralTraveller,
             showGeneralTrait,
-            showGeneralType2,
-            showGeneralPrimaryColor,
+            showGeneralTitle2,
+            showGeneralDescription2,
             showGeneralBoldKeys,
             showGeneralCustomIcon,
             showGeneralPicture,
@@ -600,11 +604,7 @@ function showDescription(){
             showGeneralPictureZoom,
             showGeneralExpansion,
             showGeneralCredit,
-            showGeneralCreator,
-            showGeneralPrice,
-            showGeneralPreview,
-            showGeneralSecondaryColor,
-            showGeneralColorSplit
+            showGeneralCreator
         ];
         current=0;
         steps[current]();
