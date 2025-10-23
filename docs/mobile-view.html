@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mobile Card Viewer</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</head>
+<body class="favorites-page mobile-view-page">
+    <button id="hamburger">&#9776;</button>
+    <nav id="side-menu">
+        <a href="mobile.html">Card Maker</a>
+        <a href="trivia-mobile.html">Trivia</a>
+        <a href="favorites-mobile.html">Favorites</a>
+    </nav>
+    <main id="mobile-card-view">
+        <iframe id="card-frame" class="hidden" title="Card preview"></iframe>
+        <p id="no-card" class="message hidden">Choose a card from your favorites to view it here.</p>
+        <div id="mobile-view-actions" class="hidden">
+            <button type="button" id="edit-card">Edit</button>
+        </div>
+    </main>
+    <script src="mobile-view.js"></script>
+    <script src="menu.js"></script>
+</body>
+</html>
