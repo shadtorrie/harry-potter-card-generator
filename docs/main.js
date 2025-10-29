@@ -1745,6 +1745,81 @@ function Favorites(name) {
             tdView.appendChild(bttnView);
             tr.appendChild(tdView);
 
+            if (isMobileFavoritesPage) {
+                let tdShare = document.createElement('td');
+                let bttnShare = document.createElement('button');
+                bttnShare.setAttribute('class', 'share');
+                bttnShare.type = 'button';
+                bttnShare.textContent = 'Share';
+
+                function showCopyFeedback() {
+                    const originalText = 'Share';
+                    bttnShare.textContent = 'Copied!';
+                    bttnShare.classList.add('copied');
+                    setTimeout(() => {
+                        bttnShare.textContent = originalText;
+                        bttnShare.classList.remove('copied');
+                    }, 2000);
+                }
+
+                function fallbackCopy(text) {
+                    let successful = false;
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.setAttribute('readonly', '');
+                    textArea.style.position = 'absolute';
+                    textArea.style.left = '-9999px';
+                    document.body.appendChild(textArea);
+
+                    const selection = document.getSelection();
+                    const selectedRange = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+
+                    textArea.select();
+                    try {
+                        successful = document.execCommand('copy');
+                    } catch (err) {
+                        console.error('Fallback copy failed', err);
+                        successful = false;
+                    }
+
+                    document.body.removeChild(textArea);
+
+                    if (selectedRange && selection) {
+                        selection.removeAllRanges();
+                        selection.addRange(selectedRange);
+                    }
+
+                    return successful;
+                }
+
+                bttnShare.addEventListener('click', () => {
+                    const target = 'mobile-view.html' + item.raw;
+                    const absoluteUrl = new URL(target, window.location.href).toString();
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(absoluteUrl)
+                            .then(() => {
+                                showCopyFeedback();
+                            })
+                            .catch(err => {
+                                console.error('Clipboard copy failed', err);
+                                if (fallbackCopy(absoluteUrl)) {
+                                    showCopyFeedback();
+                                } else {
+                                    window.prompt('Copy this link:', absoluteUrl);
+                                }
+                            });
+                    } else if (fallbackCopy(absoluteUrl)) {
+                        showCopyFeedback();
+                    } else {
+                        window.prompt('Copy this link:', absoluteUrl);
+                    }
+                });
+
+                tdShare.appendChild(bttnShare);
+                tr.appendChild(tdShare);
+            }
+
             let tdEdit = document.createElement('td');
             let bttnEdit = document.createElement('button');
             bttnEdit.setAttribute('class','edit');
