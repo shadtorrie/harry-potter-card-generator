@@ -37,6 +37,8 @@ function initCardImageGenerator() {
         "*": ["Sun", "black", "Treasure"],
         "_book": ["book", "white", "Treasure"],
         "_creature": ["creature", "white", "Treasure"],
+        "_strike": ["strike", "white", "Treasure"],
+        "_attack": ["attack", "white", "Treasure"],
         "§": ["Custom Icon", "white", "Treasure"],
 
     };
