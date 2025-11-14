@@ -216,7 +216,8 @@ function initCardImageGenerator() {
         var shadowDistance = 10;
         var italicSubstrings = ["[i]", "Heirloom: ", "Erbstück: ", "(This is not in the Supply.)", "Keep this until Clean-up."];
 
-        function writeLineWithIconsReplacedWithSpaces(line, x, y, scale, family, boldSize) {
+        function writeLineWithIconsReplacedWithSpaces(line, x, y, scale, family, boldSize, options) {
+            options = options || {};
             boldSize = boldSize || 64;
             context.textAlign = "left";
 
@@ -241,19 +242,25 @@ function initCardImageGenerator() {
                         family = "mySpecials";
                         var localY = y;
                         var localScale = scale;
-                        if (words.length === 1 && !word.startsWith('+')) {
+                        if ((options.forceBigLine && words.length >= 1) || (words.length === 1 && !word.startsWith('+'))) {
                             localY += 115 - scale * 48;
-                            context.font = "bold 192pt " + family;
-                            localScale = 1.6;
-                            if (templateSize === 3) {
-                                context.font = "bold 222pt " + family;
-                                if (word.includes('$')) { // Treasure Base cards
-                                    localScale = localScale * 2;
-                                } else {
-                                    localScale = localScale * 1.5;
-                                }
+                            if (options.forceBigLine) {
+                                var bigFontSize = options.bigFontSize || 192;
+                                context.font = bigFontSize + "pt " + family;
+                                localScale = options.bigScale || (bigFontSize / 96);
                             } else {
-                                x = x + 48 * scale;
+                                context.font = "bold 192pt " + family;
+                                localScale = 1.6;
+                                if (templateSize === 3) {
+                                    context.font = "bold 222pt " + family;
+                                    if (word.includes('$')) { // Treasure Base cards
+                                        localScale = localScale * 2;
+                                    } else {
+                                        localScale = localScale * 1.5;
+                                    }
+                                } else {
+                                    x = x + 48 * scale;
+                                }
                             }
                         }
                         var halfWidthOfSpaces = context.measureText(iconReplacedWithSpaces).width / 2 + 2;
@@ -401,66 +408,108 @@ function initCardImageGenerator() {
             var lines;
             var widthsPerLine;
             var heightsPerLine;
+            var bigLineFlags;
             var overallHeight;
             var size = 64 + 2;
+            var bigFontSize = 192;
+            var bigScale = bigFontSize / 96;
             do { //figure out the best font size, and also decide in advance how wide and tall each individual line is
                 widthsPerLine = [];
                 heightsPerLine = [];
+                bigLineFlags = [];
                 overallHeight = 0;
 
                 size -= 2;
                 context.font = size + "pt myText";
-                var widthOfSpace = context.measureText(" ").width;
                 lines = [];
                 var line = "";
+                var currentLineBig = false;
                 var progressiveWidth = 0;
                 for (var i = 0; i < words.length; ++i) {
                     var word = words[i];
                     var heightToAdd = 0;
                     if (word === "\n") {
-                        lines.push(line);
-                        if (line === "") //multiple newlines in a row
+                        var displayLine = line;
+                        var isBigLine = currentLineBig;
+                        lines.push(displayLine);
+                        bigLineFlags.push(isBigLine);
+                        if (displayLine === "") //multiple newlines in a row
                             heightToAdd = size * 0.5;
-                        else if (line === "-") //horizontal bar
+                        else if (displayLine === "-") //horizontal bar
                             heightToAdd = size * 0.75;
-                        else if ((line.match(boldLinePatternWords) || line.match(boldLinePatternWordsSpecial)) && line.indexOf(" ") < 0) { //important line
+                        else if (isBigLine) {
+                            heightToAdd = 275; //192 * 1.433
+                            var properFont = context.font;
+                            context.font = bigFontSize + "pt myText";
+                            progressiveWidth = getWidthOfLineWithIconsReplacedWithSpaces(displayLine); //=, not +=
+                            context.font = properFont;
+                        } else if ((displayLine.match(boldLinePatternWords) || displayLine.match(boldLinePatternWordsSpecial)) && displayLine.indexOf(" ") < 0) { //important line
                             heightToAdd = boldSize * 1.433;
                             var properFont = context.font;
                             context.font = "bold " + boldSize + "pt myText"; //resizing up to 64
-                            progressiveWidth = context.measureText(line).width; //=, not +=
+                            progressiveWidth = context.measureText(displayLine).width; //=, not +=
                             context.font = properFont;
-                        } else if (line.match(iconWithNumbersPatternSingle) && !line.startsWith('+')) {
+                        } else if (displayLine.match(iconWithNumbersPatternSingle) && !displayLine.startsWith('+')) {
                             heightToAdd = 275; //192 * 1.433
                             var properFont = context.font;
                             context.font = "bold 192pt myText";
-                            progressiveWidth = getWidthOfLineWithIconsReplacedWithSpaces(line); //=, not +=
+                            progressiveWidth = getWidthOfLineWithIconsReplacedWithSpaces(displayLine); //=, not +=
                             context.font = properFont;
                         } else //regular word
                             heightToAdd = size * 1.433;
                         line = ""; //start next line empty
+                        currentLineBig = false;
                         widthsPerLine.push(progressiveWidth);
                         progressiveWidth = 0;
                     } else {
                         if (word.charAt(0) === "\xa0") {
                             word = word.substring(1);
                         }
-                        if (progressiveWidth + getWidthOfLineWithIconsReplacedWithSpaces(" " + word) > maxWidth) {
-                            lines.push(line + " ");
+                        if (word === "_big" && line.length === 0) {
+                            currentLineBig = true;
+                            progressiveWidth = 0;
+                            continue;
+                        }
+                        var prefix = line.length ? " " : "";
+                        var properFont = context.font;
+                        var measurementFont = currentLineBig ? bigFontSize + "pt myText" : properFont;
+                        if (word.match(boldLinePatternWords) || word.match(boldLinePatternWordsSpecial))
+                            measurementFont = "bold " + measurementFont;
+                        context.font = measurementFont;
+                        var additionalWidth = getWidthOfLineWithIconsReplacedWithSpaces(prefix + word);
+                        context.font = properFont;
+                        if (progressiveWidth + additionalWidth > maxWidth) {
+                            var displayOverflowLine = line;
+                            var isOverflowBigLine = currentLineBig;
+                            if (displayOverflowLine.length)
+                                displayOverflowLine += " ";
+                            lines.push(displayOverflowLine);
+                            bigLineFlags.push(isOverflowBigLine);
                             line = word;
-                            heightToAdd = size * 1.433;
-                            widthsPerLine.push(progressiveWidth);
-                            progressiveWidth = getWidthOfLineWithIconsReplacedWithSpaces(word);
-                        } else {
-                            if (line.length) {
-                                line += " ";
-                                progressiveWidth += widthOfSpace;
+                            currentLineBig = false;
+                            if (isOverflowBigLine) {
+                                heightToAdd = 275;
+                                var overflowFont = context.font;
+                                context.font = bigFontSize + "pt myText";
+                                widthsPerLine.push(getWidthOfLineWithIconsReplacedWithSpaces(displayOverflowLine));
+                                context.font = overflowFont;
+                            } else {
+                                heightToAdd = size * 1.433;
+                                widthsPerLine.push(progressiveWidth);
                             }
+                            var newLineFont = context.font;
+                            if (word.match(boldLinePatternWords) || word.match(boldLinePatternWordsSpecial)) {
+                                context.font = "bold " + newLineFont;
+                                progressiveWidth = getWidthOfLineWithIconsReplacedWithSpaces(word);
+                                context.font = newLineFont;
+                            } else {
+                                progressiveWidth = getWidthOfLineWithIconsReplacedWithSpaces(word);
+                            }
+                        } else {
+                            if (line.length)
+                                line += " ";
                             line += word;
-                            var properFont = context.font;
-                            if (word.match(boldLinePatternWords) || word.match(boldLinePatternWordsSpecial)) //e.g. "+1 Action"
-                                context.font = "bold " + properFont;
-                            progressiveWidth += getWidthOfLineWithIconsReplacedWithSpaces(word);
-                            context.font = properFont;
+                            progressiveWidth += additionalWidth;
                             continue;
                         }
                     }
@@ -473,10 +522,19 @@ function initCardImageGenerator() {
             //var barHeight = size / 80 * 10;
             for (var i = 0; i < lines.length; ++i) {
                 var line = lines[i];
+                var isBigLine = bigLineFlags[i];
                 if (line === "-") //horizontal bar
                     context.fillRect(xCenter / 2, y - size * 0.375 - 5, xCenter, 10);
-                else if (line.length)
-                    writeLineWithIconsReplacedWithSpaces(line, xCenter - widthsPerLine[i] / 2, y, size / 96, "myText", boldSize);
+                else if (line.length) {
+                    if (isBigLine) {
+                        var previousFont = context.font;
+                        context.font = bigFontSize + "pt myText";
+                        writeLineWithIconsReplacedWithSpaces(line, xCenter - widthsPerLine[i] / 2, y, bigScale, "myText", boldSize, { forceBigLine: true, bigFontSize: bigFontSize, bigScale: bigScale });
+                        context.font = previousFont;
+                    } else {
+                        writeLineWithIconsReplacedWithSpaces(line, xCenter - widthsPerLine[i] / 2, y, size / 96, "myText", boldSize);
+                    }
+                }
                 //else empty line with nothing to draw
                 y += heightsPerLine[i];
             }
