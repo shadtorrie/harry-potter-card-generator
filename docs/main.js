@@ -35,9 +35,9 @@ function initCardImageGenerator() {
         '&':["food","white","Treasure"],
         "$": ["Coin", "black", "Treasure"],
         "*": ["Sun", "black", "Treasure"],
-        "§": ["Custom Icon", "white", "Treasure"],
         "_book": ["book", "white", "Treasure"],
         "_creature": ["creature", "white", "Treasure"],
+        "§": ["Custom Icon", "white", "Treasure"],
 
     };
     var normalColorFactorLists = [
@@ -134,11 +134,11 @@ function initCardImageGenerator() {
     function escapeForRegex(s) {
         return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
-    var iconList = "[" + Object.keys(icons).map(escapeForRegex).join("") + "]";
-    //var boldLinePatternIcons = RegExp("[-+]\\d+\\s" + iconList + "\\d+", "ig");
-    var iconWithNumbersPattern = "[-+]?(" + iconList + ")([\\d\\?]*[-+\\*]?)";
-    var iconWithNumbersPatternSingle = RegExp("^([-+]?\\d+)?" + iconWithNumbersPattern + "(\\S*)$");
-    iconWithNumbersPattern = RegExp(iconWithNumbersPattern, "g");
+    var iconPattern = "(?:" + Object.keys(icons).map(escapeForRegex).join("|") + ")";
+    //var boldLinePatternIcons = RegExp("[-+]\\d+\\s" + iconPattern + "\\d+", "ig");
+    var iconWithNumbersPatternString = "[-+]?(" + iconPattern + ")([\\d\\?]*[-+\\*]?)";
+    var iconWithNumbersPatternSingle = RegExp("^([-+]?\\d+)?" + iconWithNumbersPatternString + "(\\S*)$");
+    var iconWithNumbersPattern = RegExp(iconWithNumbersPatternString, "g");
 
     var canvases = document.getElementsByClassName("myCanvas");
 
