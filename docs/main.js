@@ -36,8 +36,8 @@ function initCardImageGenerator() {
         "$": ["Coin", "black", "Treasure"],
         "*": ["Sun", "black", "Treasure"],
         "§": ["Custom Icon", "white", "Treasure"],
-        "book": ["book", "white", "Treasure"],
-        "creature": ["creature", "white", "Treasure"],
+        "_book": ["book", "white", "Treasure"],
+        "_creature": ["creature", "white", "Treasure"],
 
     };
     var normalColorFactorLists = [
