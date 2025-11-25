@@ -47,6 +47,50 @@
     }
 
     let updateTimer;
+    function fallbackCopy(text){
+        let successful = false;
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.setAttribute('readonly', '');
+        textArea.style.position = 'absolute';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+
+        const selection = document.getSelection();
+        const selectedRange = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+
+        textArea.select();
+        try {
+            successful = document.execCommand('copy');
+        } catch (err) {
+            console.error('Fallback copy failed', err);
+            successful = false;
+        }
+
+        document.body.removeChild(textArea);
+
+        if (selectedRange && selection) {
+            selection.removeAllRanges();
+            selection.addRange(selectedRange);
+        }
+
+        return successful;
+    }
+
+    function copyLinkToClipboard(queryString){
+        const target = 'mobile-view.html' + queryString;
+        const absoluteUrl = new URL(target, window.location.href).toString();
+        if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(absoluteUrl).catch(err=>{
+                console.error('Clipboard copy failed', err);
+                if(!fallbackCopy(absoluteUrl)){
+                    window.prompt('Copy this link:', absoluteUrl);
+                }
+            });
+        } else if(!fallbackCopy(absoluteUrl)){
+            window.prompt('Copy this link:', absoluteUrl);
+        }
+    }
 
     function scheduleUpdate(){
         clearTimeout(updateTimer);
@@ -719,6 +763,7 @@ function showDescription(){
         }
         favs.push(queryString);
         localStorage.setItem('favorites', JSON.stringify(favs));
+        copyLinkToClipboard(queryString);
         resetWizard();
     }
 
