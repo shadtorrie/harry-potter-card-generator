@@ -705,14 +705,14 @@ function initCardImageGenerator() {
             if (isEachColorDark[1])
                 context.fillStyle = "white";
             if (!isTrivia)
-                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 85);
+                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 100);
             if (typeLine.split(" - ").length >= 4) {
                 let types2 = typeLine.split(" - ");
                 let types1 = types2.splice(0, Math.ceil(types2.length / 2));
                 let left = priceLine ? 750 + 65 * (numberPriceIcons - 1) : 701;
                 let right = priceLine ? 890 - 65 * (numberPriceIcons - 1) : 1180;
-                writeSingleLine(types1.join(" - ") + " -", left, 1922 - 26, right, 42);
-                writeSingleLine(types2.join(" - "), left, 1922 + 26, right, 42);
+                writeSingleLine(types1.join(" - ") + " -", left, 1922 - 26, right, 60);
+                writeSingleLine(types2.join(" - "), left, 1922 + 26, right, 60);
             } else {
                 if (expansion.height > 0 && expansion.width > 0) {
                     let left = priceLine ? 730 + 65 * (numberPriceIcons - 1) : 701;
