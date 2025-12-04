@@ -705,7 +705,7 @@ function initCardImageGenerator() {
             if (isEachColorDark[1])
                 context.fillStyle = "white";
             if (!isTrivia)
-                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 75);
+                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 85);
             if (typeLine.split(" - ").length >= 4) {
                 let types2 = typeLine.split(" - ");
                 let types1 = types2.splice(0, Math.ceil(types2.length / 2));
