@@ -603,8 +603,14 @@ function initCardImageGenerator() {
         var pictureY = document.getElementById("picture-y").value;
         var pictureZoom = document.getElementById("picture-zoom").value;
         var expansion = images[17];
+        var titleLine = document.getElementById("title").value;
+        var titleLineUpper = titleLine.toUpperCase();
+        var titleLine2 = document.getElementById("title2").value;
+        var titleLine2Upper = titleLine2.toUpperCase();
         var typeLine = document.getElementById("type").value;
+        var typeLineUpper = typeLine.toUpperCase();
         var heirloomLine = document.getElementById("type2").value;
+        var heirloomLineUpper = heirloomLine.toUpperCase();
         var previewLine = document.getElementById("preview").value;
         var priceLine = document.getElementById("price").value;
         var numberPriceIcons = (priceLine.match(new RegExp("[" + Object.keys(icons).map(escapeForRegex).join("") + "]", "g")) || []).length
@@ -701,16 +707,16 @@ function initCardImageGenerator() {
             context.textAlign = "center";
             context.textBaseline = "middle";
             //context.font = "small-caps" + context.font;
-            if (heirloomLine) {
+            if (heirloomLineUpper) {
                 context.drawImage(images[13], 97, 1720); //Heirloom banner
-                writeSingleLine(heirloomLine, 701, 1799, 1040, 58, "myText");
+                writeSingleLine(heirloomLineUpper, 701, 1799, 1040, 58, "myText");
             }
             if (isEachColorDark[1])
                 context.fillStyle = "white";
             if (!isTrivia)
-                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 100);
-            if (typeLine.split(" - ").length >= 4) {
-                let types2 = typeLine.split(" - ");
+                writeSingleLine(titleLineUpper, 701, 215, previewLine ? 800 : 1180, 100);
+            if (typeLineUpper.split(" - ").length >= 4) {
+                let types2 = typeLineUpper.split(" - ");
                 let types1 = types2.splice(0, Math.ceil(types2.length / 2));
                 let left = priceLine ? 750 + 65 * (numberPriceIcons - 1) : 701;
                 let right = priceLine ? 890 - 65 * (numberPriceIcons - 1) : 1180;
@@ -720,11 +726,11 @@ function initCardImageGenerator() {
                 if (expansion.height > 0 && expansion.width > 0) {
                     let left = priceLine ? 730 + 65 * (numberPriceIcons - 1) : 701;
                     let right = priceLine ? 800 - 65 * (numberPriceIcons - 1) : 900;
-                    writeSingleLine(typeLine, left, 1922, right, 64);
+                    writeSingleLine(typeLineUpper, left, 1922, right, 64);
                 } else {
                     let left = priceLine ? 750 + 125 * (numberPriceIcons - 1) : 701;
                     let right = priceLine ? 890 - 85 * (numberPriceIcons - 1) : 1180;
-                    writeSingleLine(typeLine, left, 1922, right, 64);
+                    writeSingleLine(typeLineUpper, left, 1922, right, 64);
                 }
             }
             if (priceLine)
@@ -736,7 +742,7 @@ function initCardImageGenerator() {
             context.fillStyle = (isEachColorDark[0]) ? "white" : "black";
             var desc0 = document.getElementById("description").value;
             if (isTrivia)
-                desc0 = document.getElementById("title").value + (desc0.trim() ? "\n-\n" : "") + desc0;
+                desc0 = titleLineUpper + (desc0.trim() ? "\n-\n" : "") + desc0;
             if (!heirloomLine)
                 writeDescription(desc0, 701, 1500, 960, 660, 64);
             else
@@ -785,17 +791,17 @@ function initCardImageGenerator() {
             if (document.getElementById("trait").checked) {
 
                 if (typeLine) {
-                    writeSingleLine(typeLine, 1075, 165, 780, 70);
+                    writeSingleLine(typeLineUpper, 1075, 165, 780, 70);
                 }
 
                 if (!isTrivia) {
                     context.save();
                     context.rotate(Math.PI * 3 / 2);
-                    writeSingleLine(document.getElementById("title").value, -700, 2030, 750, 70);
+                    writeSingleLine(titleLineUpper, -700, 2030, 750, 70);
                     context.restore();
                     context.save();
                     context.rotate(Math.PI / 2);
-                    writeSingleLine(document.getElementById("title").value, 700, -120, 750, 70);
+                    writeSingleLine(titleLineUpper, 700, -120, 750, 70);
                     context.restore();
                 }
 
@@ -803,14 +809,14 @@ function initCardImageGenerator() {
             } else {
 
                 if (!isTrivia)
-                    writeSingleLine(document.getElementById("title").value, 1075, 165, 780, 70);
+                    writeSingleLine(titleLineUpper, 1075, 165, 780, 70);
 
                 if (typeLine) {
                     context.save();
                     context.translate(1903, 240);
                     context.rotate(45 * Math.PI / 180);
                     context.scale(1, 0.8); //yes, the letters are shorter
-                    writeSingleLine(typeLine, 0, 0, 283, 64);
+                    writeSingleLine(typeLineUpper, 0, 0, 283, 64);
                     context.restore();
                 }
 
@@ -820,7 +826,7 @@ function initCardImageGenerator() {
                 writeLineWithIconsReplacedWithSpaces(priceLine + " ", 130, 205, 85 / 90, "mySpecials"); //adding a space confuses writeLineWithIconsReplacedWithSpaces into thinking this isn't a line that needs resizing
             var desc1 = document.getElementById("description").value;
             if (isTrivia)
-                desc1 = document.getElementById("title").value + (desc1.trim() ? "\n-\n" : "") + desc1;
+                desc1 = titleLineUpper + (desc1.trim() ? "\n-\n" : "") + desc1;
             writeDescription(desc1, 1075, 1107, 1600, 283, 70);
             writeIllustrationCredit(181, 1272, "black", "bold ");
             writeCreatorCredit(1969, 1272, "black", "bold ");
@@ -857,7 +863,7 @@ function initCardImageGenerator() {
 
                 if (!isTrivia) {
                     context.save();
-                    var title = document.getElementById(l).value;
+                    var title = l === "title" ? titleLineUpper : titleLine2Upper;
                     var size = 75 + 2;
                     do {
                         context.font = (size -= 2) + "pt myTitle";
@@ -879,17 +885,17 @@ function initCardImageGenerator() {
                     writeLineWithIconsReplacedWithSpaces(p + " ", 153, 1940, 85 / 90, "mySpecials");
                 var descHalf = document.getElementById(d).value;
                 if (isTrivia)
-                    descHalf = document.getElementById(l).value + (descHalf.trim() ? "\n-\n" : "") + descHalf;
+                    descHalf = (l === "title" ? titleLineUpper : titleLine2Upper) + (descHalf.trim() ? "\n-\n" : "") + descHalf;
                 writeDescription(descHalf, 701, 1600, 960, 460, 64);
                 context.restore();
             }
             context.save();
-            drawHalfCard(typeLine, "title", priceLine, "description", 0);
+            drawHalfCard(typeLineUpper, "title", priceLine, "description", 0);
             context.save();
             context.translate(1403, 2151); //bottom right corner
             context.rotate(Math.PI);
             shadowDistance = -shadowDistance;
-            drawHalfCard(heirloomLine, "title2", previewLine, "description2", (normalColorCurrentIndices[1] > 0) ? 1 : 0);
+            drawHalfCard(heirloomLineUpper, "title2", previewLine, "description2", (normalColorCurrentIndices[1] > 0) ? 1 : 0);
             shadowDistance = -shadowDistance;
             context.textAlign = "left";
             writeIllustrationCredit(150, 2038, "white", "");
@@ -908,24 +914,24 @@ function initCardImageGenerator() {
             context.textAlign = "center";
             context.textBaseline = "middle";
             //context.font = "small-caps" + context.font;
-            if (heirloomLine) {
+            if (heirloomLineUpper) {
                 context.drawImage(images[13], 97, 1720); //Heirloom banner
-                writeSingleLine(heirloomLine, 701, 1799, 1040, 58, "myText");
+                writeSingleLine(heirloomLineUpper, 701, 1799, 1040, 58, "myText");
             }
             if (isEachColorDark[1])
                 context.fillStyle = "white";
             if (!isTrivia)
-                writeSingleLine(document.getElementById("title").value, 701, 215, previewLine ? 800 : 1180, 75);
-            if (typeLine.split(" - ").length >= 4) {
-                let types2 = typeLine.split(" - ");
+                writeSingleLine(titleLineUpper, 701, 215, previewLine ? 800 : 1180, 75);
+            if (typeLineUpper.split(" - ").length >= 4) {
+                let types2 = typeLineUpper.split(" - ");
                 let types1 = types2.splice(0, Math.ceil(types2.length / 2));
                 writeSingleLine(types1.join(" - ") + " -", priceLine ? 750 : 701, 1945 - 26, priceLine ? 890 : 1180, 42);
                 writeSingleLine(types2.join(" - "), priceLine ? 750 : 701, 1945 + 26, priceLine ? 890 : 1180, 42);
             } else {
                 if (expansion.height > 0 && expansion.width > 0) {
-                    writeSingleLine(typeLine, priceLine ? 730 : 701, 1945, priceLine ? 800 : 900, 64);
+                    writeSingleLine(typeLineUpper, priceLine ? 730 : 701, 1945, priceLine ? 800 : 900, 64);
                 } else {
-                    writeSingleLine(typeLine, priceLine ? 750 : 701, 1945, priceLine ? 890 : 1180, 64);
+                    writeSingleLine(typeLineUpper, priceLine ? 750 : 701, 1945, priceLine ? 890 : 1180, 64);
                 }
             }
             if (priceLine)
@@ -937,7 +943,7 @@ function initCardImageGenerator() {
             context.fillStyle = (isEachColorDark[0]) ? "white" : "black";
             var desc3 = document.getElementById("description").value;
             if (isTrivia)
-                desc3 = document.getElementById("title").value + (desc3.trim() ? "\n-\n" : "") + desc3;
+                desc3 = titleLineUpper + (desc3.trim() ? "\n-\n" : "") + desc3;
             if (!heirloomLine)
                 writeDescription(desc3, 701, 1060, 960, 1500, 64);
             else
@@ -961,13 +967,13 @@ function initCardImageGenerator() {
                 if (isEachColorDark[1])
                     context.fillStyle = "white";
                 context.rotate(Math.PI / 2);
-                writeSingleLine(document.getElementById("title").value, 700, -1920, 500, 75);
+                writeSingleLine(titleLineUpper, 700, -1920, 500, 75);
                 context.restore();
                 context.save();
                 if (isEachColorDark[1])
                     context.fillStyle = "white";
                 context.rotate(Math.PI * 3 / 2);
-                writeSingleLine(document.getElementById("title").value, -700, 230, 500, 75);
+                writeSingleLine(titleLineUpper, -700, 230, 500, 75);
                 context.restore();
             }
         } else if (templateSize == 5) { //player mat
@@ -984,11 +990,11 @@ function initCardImageGenerator() {
             if (isEachColorDark[1])
                 context.fillStyle = "white";
             if (!isTrivia)
-                writeSingleLine(document.getElementById("title").value, 464, 96, 490, 55);
+                writeSingleLine(titleLineUpper, 464, 96, 490, 55);
 
             var desc5 = document.getElementById("description").value;
             if (isTrivia)
-                desc5 = document.getElementById("title").value + (desc5.trim() ? "\n-\n" : "") + desc5;
+                desc5 = titleLineUpper + (desc5.trim() ? "\n-\n" : "") + desc5;
             writeDescription(desc5, 464, 572, 740, 80, 44);
 
             writeIllustrationCredit(15, 660, "white", "", 16);
@@ -1012,9 +1018,9 @@ function initCardImageGenerator() {
             var desc6 = document.getElementById("description");
             var text6 = desc6 ? desc6.value.trim() : "";
             if (text6.length > 0)
-                text6 = document.getElementById("title").value + "\n-\n" + text6;
+                text6 = titleLineUpper + "\n-\n" + text6;
             else
-                text6 = document.getElementById("title").value;
+                text6 = titleLineUpper;
             writeDescription(text6, 1075, 702, 1800, 600, 70);
 
         }
