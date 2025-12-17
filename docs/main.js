@@ -40,6 +40,7 @@ function initCardImageGenerator() {
         "_hero": ["hero", "white", "Treasure"],
         "_charm": ["charm", "white", "Treasure"],
         "_transfiguration": ["transfiguration", "white", "Treasure"],
+        "_strike": ["strike", "white", "Treasure"],
         "_attack": ["attack", "white", "Treasure"],
         "§": ["Custom Icon", "white", "Treasure"],
 
