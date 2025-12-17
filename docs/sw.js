@@ -77,6 +77,9 @@ const PRECACHE_CARD_URLS = [
   'card-resources/Traveller.png',
   'card-resources/book.png',
   'card-resources/creature.png',
+  'card-resources/charm.png',
+  'card-resources/hero.png',
+  'card-resources/transfiguration.png',
   'card-resources/strike.png',
     'card-resources/attack.png',
 ];
