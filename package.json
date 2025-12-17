@@ -1,0 +1,9 @@
+{
+  "name": "harry-potter-card-generator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/update-sw-version.js",
+    "update-sw-version": "node scripts/update-sw-version.js"
+  }
+}

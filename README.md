@@ -19,10 +19,19 @@ If you want to host the generator yourself, please also run your own version of 
 https://dominion-card-generator-cors.herokuapp.com/
 ```
 
+Before deploying the contents of `docs/`, run the service worker versioning step so
+clients pick up new assets without a manual cache clear:
+
+```
+npm run update-sw-version
+```
+
+You can optionally provide `SW_VERSION=<commit-hash-or-build-id>` when running the
+command; otherwise the script uses the current git commit hash or a timestamp.
+
 ### Favorites Import Format
 The generator allows saving favorite cards in your browser. The favorites menu
 now supports importing files in two formats:
 
 1. A JSON array exported from the generator.
 2. A simple CSV file where each line contains a card link.
-
