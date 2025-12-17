@@ -1,8 +1,10 @@
 // Names of the caches used in this version of the service worker.
-// Increase chache number when you update any of the local resources, which will in turn trigger the install event again.
-const PRECACHE_CORE = 'precache-core-v29';
-const PRECACHE_CARD = 'precache-card-v6';
-const RUNTIME = 'runtime';
+// The BUILD_VERSION string is injected by the build pipeline to ensure the
+// service worker updates whenever a new deployment is published.
+const BUILD_VERSION = '20251217152419';
+const PRECACHE_CORE = `precache-core-${BUILD_VERSION}`;
+const PRECACHE_CARD = `precache-card-${BUILD_VERSION}`;
+const RUNTIME = `runtime-${BUILD_VERSION}`;
 
 // A list of local resources we always want to be cached.
 const OFFLINE_URL = './';
@@ -87,14 +89,10 @@ const PRECACHE_CARD_URLS = [
 // The install handler takes care of precaching the resources we always need.
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(PRECACHE_CORE)
-        .then(cache => cache.addAll(PRECACHE_CORE_URLS))
-        .then(self.skipWaiting())
-    );
-    event.waitUntil(
-        caches.open(PRECACHE_CARD)
-        .then(cache => cache.addAll(PRECACHE_CARD_URLS))
-        .then(self.skipWaiting())
+        Promise.all([
+            caches.open(PRECACHE_CORE).then(cache => cache.addAll(PRECACHE_CORE_URLS)),
+            caches.open(PRECACHE_CARD).then(cache => cache.addAll(PRECACHE_CARD_URLS)),
+        ]).then(() => self.skipWaiting())
     );
 });
 
@@ -105,11 +103,19 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
         }).then(cachesToDelete => {
-            return Promise.all(cachesToDelete.map(cacheToDelete => {
-                return caches.delete(cacheToDelete);
-            }));
+            return Promise.all(cachesToDelete.map(cacheToDelete => caches.delete(cacheToDelete)));
         }).then(() => self.clients.claim())
     );
+});
+
+self.addEventListener('message', event => {
+    const message = event.data;
+    if (message === 'SKIP_WAITING' || (message && message.type === 'SKIP_WAITING')) {
+        self.skipWaiting();
+    }
+    if (message === 'CLIENTS_CLAIM' || (message && message.type === 'CLIENTS_CLAIM')) {
+        self.clients.claim();
+    }
 });
 
 // The fetch handler serves responses for same-origin resources from a cache.
